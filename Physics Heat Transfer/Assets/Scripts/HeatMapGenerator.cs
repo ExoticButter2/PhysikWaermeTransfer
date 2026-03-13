@@ -13,12 +13,13 @@ public class HeatMapGenerator : MonoBehaviour
     [SerializeField]
     private GameObject _materialObject;
 
-    private Heat[,,] _heatGrid;
+    [HideInInspector]
+    public Heat[,,] heatGrid;
 
     [SerializeField]
     private float cellSize = 0.1f;
 
-    private void Start()
+    private void Awake()
     {
         InitializeHeatGrid();
         FillHeatGrid();
@@ -39,7 +40,7 @@ public class HeatMapGenerator : MonoBehaviour
             Mathf.CeilToInt(bounds.size.z / cellSize)
         );
 
-        _heatGrid = new Heat[gridSize.x, gridSize.y, gridSize.z];
+        heatGrid = new Heat[gridSize.x, gridSize.y, gridSize.z];
     }
 
     private void FillHeatGrid()
@@ -56,7 +57,7 @@ public class HeatMapGenerator : MonoBehaviour
 
             Vector3 childPosition = child.position;
 
-            _heatGrid[(int)childPosition.x, (int)childPosition.y, (int)childPosition.z] = heatComponent;
+            heatGrid[(int)childPosition.x, (int)childPosition.y, (int)childPosition.z] = heatComponent;
         }
 
         Debug.Log("Filled heat grid!");
