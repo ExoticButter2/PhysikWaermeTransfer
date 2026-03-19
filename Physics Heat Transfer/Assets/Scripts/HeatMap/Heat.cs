@@ -5,8 +5,12 @@ using System.Collections.Generic;
 
 public class Heat : MonoBehaviour
 {
-    private MaterialPropertyBlock _propertyBlock;
-    private MeshRenderer _meshRenderer;
+    public MaterialPropertyBlock propertyBlock;
+    public MeshRenderer meshRenderer;
+
+    public int gridX = 0;
+    public int gridY = 0;
+    public int gridZ = 0;
 
     public HeatMapGenerator heatMapGenerator;
 
@@ -26,8 +30,9 @@ public class Heat : MonoBehaviour
 
     private void Start()
     {
-        _meshRenderer = transform.GetComponent<MeshRenderer>();
-        _propertyBlock = new MaterialPropertyBlock();
+        meshRenderer = transform.GetComponent<MeshRenderer>();
+        propertyBlock = new MaterialPropertyBlock();
+        heatMapGenerator = transform.parent.GetComponent<HeatMapGenerator>();
         GetNeighbors();
     }
 
@@ -40,43 +45,41 @@ public class Heat : MonoBehaviour
     {
         Heat[,,] heatGrid = heatMapGenerator.heatGrid;
 
-        int xPos = (int)transform.position.x;
-        int yPos = (int)transform.position.y;
-        int zPos = (int)transform.position.z;
+        Debug.Log($"Z position: {gridZ}");
 
         int xMax = heatGrid.GetLength(0);
         int yMax = heatGrid.GetLength(1);
         int zMax = heatGrid.GetLength(2);
 
-        if (xPos <= 0)
+        if (gridX < 0)
         {
             Debug.LogWarning("X position is invalid!");
             return;
         }
 
-        if (yPos <= 0)
+        if (gridY < 0)
         {
             Debug.LogWarning("Y position is invalid!");
             return;
         }
 
-        if (zPos <= 0)
+        if (gridZ < 0)
         {
             Debug.LogWarning("Z position is invalid!");
             return;
         }
 
         //X
-        Heat rightNeighbor = (xPos + 1 < xMax) ? heatGrid[xPos + 1, yPos, zPos] : null;
-        Heat leftNeighbor = (xPos - 1 >= 0) ? heatGrid[xPos - 1, yPos, zPos] : null;
+        Heat rightNeighbor = (gridX + 1 < xMax) ? heatGrid[gridX + 1, gridY, gridZ] : null;
+        Heat leftNeighbor = (gridX - 1 >= 0) ? heatGrid[gridX - 1, gridY, gridZ] : null;
 
         //Y
-        Heat upNeighbor = (yPos + 1 < yMax) ? heatGrid[xPos, yPos + 1, zPos] : null;
-        Heat downNeighbor = (yPos - 1 >= 0) ? heatGrid[xPos, yPos - 1, zPos] : null;
+        Heat upNeighbor = (gridY + 1 < yMax) ? heatGrid[gridX, gridY + 1, gridZ] : null;
+        Heat downNeighbor = (gridY - 1 >= 0) ? heatGrid[gridX, gridY - 1, gridZ] : null;
 
         //Z
-        Heat frontNeighbor = (zPos + 1 < zMax) ? heatGrid[xPos, yPos, zPos + 1] : null;
-        Heat backNeighbor = (zPos - 1 >= 0) ? heatGrid[xPos, yPos, zPos - 1] : null;
+        Heat frontNeighbor = (gridZ + 1 < zMax) ? heatGrid[gridX, gridY, gridZ + 1] : null;
+        Heat backNeighbor = (gridZ - 1 >= 0) ? heatGrid[gridX, gridY, gridZ - 1] : null;
 
         #region nullchecks
         if (rightNeighbor != null)
@@ -109,6 +112,8 @@ public class Heat : MonoBehaviour
             _heatNeighbors.Add(backNeighbor);
         }
         #endregion
+
+        Debug.Log($"Heat neighbors list size: {_heatNeighbors.Count}");
     }
 
     public void SpreadHeat()
@@ -133,11 +138,17 @@ public class Heat : MonoBehaviour
 
         foreach (KeyValuePair<Heat, float> changeForNeighbor in temperatureChangeForNeighbors)
         {
-            changeForNeighbor.Key.heat += changeForNeighbor.Value;
-            this.heat -= changeForNeighbor.Value;
+            Heat heatComponent = changeForNeighbor.Key;
+            float deltaTemperature = changeForNeighbor.Value;
 
-            heatMapGenerator.heatMapUpdater.UpdateHeatColor(changeForNeighbor.Key.gameObject, changeForNeighbor.Value, _meshRenderer, _propertyBlock);
+            heatComponent.heat += deltaTemperature;
+            this.heat -= deltaTemperature;
+
+            heatMapGenerator.heatMapUpdater.UpdateHeatColor(heatComponent.gameObject, heatComponent.heat, heatComponent.meshRenderer, heatComponent.propertyBlock);
+            heatMapGenerator.heatMapUpdater.UpdateHeatColor(gameObject, this.heat, this.meshRenderer, this.propertyBlock);
             Debug.Log("Updated heat map!");
         }
+
+        Debug.Log($"Amount of neighbors: {temperatureChangeForNeighbors.Count}");
     }
 }

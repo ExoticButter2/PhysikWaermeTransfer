@@ -1,9 +1,16 @@
 using NUnit.Framework;
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class HeatMapGenerator : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject cubeMaterialPrefab;
+
+    [SerializeField]
+    public int heightWidth = 16;
+
     public HeatMapUpdater heatMapUpdater;
 
     [SerializeField]
@@ -21,44 +28,34 @@ public class HeatMapGenerator : MonoBehaviour
     private void Awake()
     {
         InitializeHeatGrid();
-        FillHeatGrid();
     }
 
     private void InitializeHeatGrid()
     {
-        Bounds bounds = new Bounds(_materialObject.transform.position, Vector3.one);
+        heatGrid = new Heat[heightWidth, heightWidth, heightWidth];
 
-        foreach (Transform child in _materialObject.transform)
+        for (int x = 0; x < heightWidth; x++)
         {
-            bounds.Encapsulate(child.position);
-        }
-
-        Vector3Int gridSize = new Vector3Int(
-            Mathf.CeilToInt(bounds.size.x / cellSize),
-            Mathf.CeilToInt(bounds.size.y / cellSize),
-            Mathf.CeilToInt(bounds.size.z / cellSize)
-        );
-
-        heatGrid = new Heat[gridSize.x, gridSize.y, gridSize.z];
-    }
-
-    private void FillHeatGrid()
-    {
-        foreach (Transform child in _materialObject.transform)
-        {
-            Heat heatComponent = child.GetComponent<Heat>();
-
-            if (heatComponent == null)
+            for (int y = 0; y < heightWidth; y++)
             {
-                Debug.LogWarning("No heat component found inside child");
-                continue;
+                for (int z = 0; z < heightWidth; z++)
+                {
+                    GameObject cubeMaterial = Instantiate(cubeMaterialPrefab, new Vector3(x * cellSize, y * cellSize, z * cellSize), Quaternion.identity, gameObject.transform);
+                    Heat cubeHeatComponent = cubeMaterial.GetComponent<Heat>();
+
+                    if (cubeHeatComponent == null)
+                    {
+                        Debug.LogWarning("No heat component found inside cube material!");
+                        continue;
+                    }
+
+                    cubeHeatComponent.gridX = x;
+                    cubeHeatComponent.gridY = y;
+                    cubeHeatComponent.gridZ = z;
+
+                    heatGrid[x, y, z] = cubeHeatComponent;
+                }
             }
-
-            Vector3 childPosition = child.position;
-
-            heatGrid[(int)childPosition.x, (int)childPosition.y, (int)childPosition.z] = heatComponent;
         }
-
-        Debug.Log("Filled heat grid!");
     }
 }
