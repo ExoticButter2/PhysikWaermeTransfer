@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class Heat : MonoBehaviour
 {
+    private MaterialPropertyBlock _propertyBlock;
+    private MeshRenderer _meshRenderer;
+
     public HeatMapGenerator heatMapGenerator;
 
     public float heat;
@@ -18,9 +21,19 @@ public class Heat : MonoBehaviour
 
     private List<Heat> _heatNeighbors = new List<Heat>();
 
+    [SerializeField]
+    private ChemicalMaterial _chemicalMaterial;
+
     private void Start()
     {
+        _meshRenderer = transform.GetComponent<MeshRenderer>();
+        _propertyBlock = new MaterialPropertyBlock();
         GetNeighbors();
+    }
+
+    private void Update()
+    {
+        SpreadHeat();
     }
 
     private void GetNeighbors()
@@ -100,6 +113,31 @@ public class Heat : MonoBehaviour
 
     public void SpreadHeat()
     {
+        int heatNeighborCount = _heatNeighbors.Count;
+        Dictionary<Heat, float> temperatureChangeForNeighbors = new Dictionary<Heat, float>();
 
+        foreach (Heat neighbor in _heatNeighbors)
+        {
+            float deltaTemperature = this.heat - neighbor.heat;
+
+            float changeInTemperature = 0f;
+
+            float heatFlux = _chemicalMaterial.heatConductivity * (deltaTemperature / _chemicalMaterial.distancePerCubeInSquareCm);//1 is 1^2cm distance, get heatflux for deltaT
+            // Waermestromdichte = Waermeleitfaehigkeit * (deltaTemperatur / Distanz)
+
+            changeInTemperature = (heatFlux * Time.deltaTime) / (_chemicalMaterial.densityPerCubicCm * _chemicalMaterial.specificHeat * _chemicalMaterial.distancePerCubeInSquareCm);
+            // deltaTemperatur = (Waermestromdichte) / (Dichte * spezifische Waerme * Volumen (hier aber distanz weil es im modell wuerfeln sind))
+
+            temperatureChangeForNeighbors.Add(neighbor, changeInTemperature);
+        }
+
+        foreach (KeyValuePair<Heat, float> changeForNeighbor in temperatureChangeForNeighbors)
+        {
+            changeForNeighbor.Key.heat += changeForNeighbor.Value;
+            this.heat -= changeForNeighbor.Value;
+
+            heatMapGenerator.heatMapUpdater.UpdateHeatColor(changeForNeighbor.Key.gameObject, changeForNeighbor.Value, _meshRenderer, _propertyBlock);
+            Debug.Log("Updated heat map!");
+        }
     }
 }

@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class HeatMapGenerator : MonoBehaviour
 {
-    [SerializeField]
-    private Texture2D _heatMap;
+    public HeatMapUpdater heatMapUpdater;
 
     [SerializeField]
     private ChemicalMaterial _materialData;
