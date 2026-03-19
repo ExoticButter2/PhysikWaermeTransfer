@@ -8,10 +8,13 @@ public class HeatMapUpdater : MonoBehaviour
 
     public void UpdateHeatColor(GameObject objectToChange, float heat, MeshRenderer meshRenderer, MaterialPropertyBlock propertyBlock)
     {
-        Color heatColor = _heatMap.heatMapImage.GetPixelBilinear(Mathf.Clamp01(heat / _heatMap.maxTemperature), 0.5f);//x coordinate depends on temperature
+        float rightAmount = Mathf.Clamp01(heat / _heatMap.maxTemperature);
+        Color heatColor = _heatMap.heatMapImage.GetPixelBilinear(Mathf.Clamp01(rightAmount), 0.5f);//x coordinate depends on temperature
         //meshRenderer.GetPropertyBlock(propertyBlock);
         //propertyBlock.SetColor("_BaseColor", heatColor);
         //meshRenderer.SetPropertyBlock(propertyBlock);
         meshRenderer.material.color = heatColor;
+
+        Debug.Log($"Color to x: {rightAmount}");
     }
 }

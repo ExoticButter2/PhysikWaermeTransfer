@@ -2,14 +2,20 @@ using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Heat : MonoBehaviour
 {
+    [HideInInspector]
     public MaterialPropertyBlock propertyBlock;
+    [HideInInspector]
     public MeshRenderer meshRenderer;
 
+    [HideInInspector]
     public int gridX = 0;
+    [HideInInspector]
     public int gridY = 0;
+    [HideInInspector]
     public int gridZ = 0;
 
     public HeatMapGenerator heatMapGenerator;
