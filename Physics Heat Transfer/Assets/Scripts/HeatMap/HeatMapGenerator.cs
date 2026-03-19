@@ -32,6 +32,8 @@ public class HeatMapGenerator : MonoBehaviour
 
     private void InitializeHeatGrid()
     {
+        int idCounter = 0;
+
         heatGrid = new Heat[heightWidth, heightWidth, heightWidth];
 
         for (int x = 0; x < heightWidth; x++)
@@ -53,7 +55,13 @@ public class HeatMapGenerator : MonoBehaviour
                     cubeHeatComponent.gridY = y;
                     cubeHeatComponent.gridZ = z;
 
+                    cubeHeatComponent.heatID = idCounter;
+
+                    cubeMaterial.layer = LayerMask.NameToLayer("HeatComponent");
+
                     heatGrid[x, y, z] = cubeHeatComponent;
+
+                    idCounter++;
                 }
             }
         }
