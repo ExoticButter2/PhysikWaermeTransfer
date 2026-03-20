@@ -78,8 +78,6 @@ public class Heat : MonoBehaviour
     {
         Heat[,,] heatGrid = heatMapGenerator.heatGrid;
 
-        Debug.Log($"Z position: {gridZ}");
-
         int xMax = heatGrid.GetLength(0);
         int yMax = heatGrid.GetLength(1);
         int zMax = heatGrid.GetLength(2);
@@ -154,8 +152,6 @@ public class Heat : MonoBehaviour
             _heatNeighbors[i] = neighbors[i];
         }
         #endregion
-
-        Debug.Log($"Heat neighbors list size: {_heatNeighbors.Length}");
     }
 
     public void SpreadHeat()

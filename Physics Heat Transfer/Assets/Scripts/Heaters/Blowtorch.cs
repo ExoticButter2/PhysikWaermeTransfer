@@ -47,8 +47,6 @@ public class Blowtorch : MonoBehaviour
 
             heatComponent.heat += _degreesPerSecond * Time.deltaTime;
         }
-
-        //Debug.DrawRay(_flameOrigin.position, _flameOrigin.forward, Color.red);
     }
 
     private void ToggleBlowtorch()
