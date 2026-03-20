@@ -15,6 +15,9 @@ public class Blowtorch : MonoBehaviour
     [SerializeField]
     private LayerMask _heatLayerMask;
 
+    [SerializeField]
+    private ParticleSystem _flameParticleSystem;
+
     private void Start()
     {
         ToggleBlowtorch();//KEEP IT ENABLED FOR NOW
@@ -51,5 +54,14 @@ public class Blowtorch : MonoBehaviour
     private void ToggleBlowtorch()
     {
         _blowtorchEnabled = !_blowtorchEnabled;
+
+        if (_blowtorchEnabled)
+        {
+            _flameParticleSystem.Play();
+        }
+        else
+        {
+            _flameParticleSystem.Stop();
+        }
     }
 }
