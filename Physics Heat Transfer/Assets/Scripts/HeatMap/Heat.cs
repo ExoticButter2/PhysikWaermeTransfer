@@ -25,15 +25,34 @@ public class Heat : MonoBehaviour
 
     public HeatMapGenerator heatMapGenerator;
 
-    public float heat = 0f;
-    public float heatBeforeVisualUpdate = 0f;
+    private float _absoluteZeroPoint = -273.15f;//in celsius
 
-    //private Heat _upNeighbor;
-    //private Heat _downNeighbor;
-    //private Heat _leftNeighbor;
-    //private Heat _rightNeighbor;
-    //private Heat _frontNeighbor;
-    //private Heat _backNeighbor;
+    public float HeatP
+    {
+        get
+        {
+            return heatValue;
+        }
+        
+        set
+        {
+            if (value < _absoluteZeroPoint)
+            {
+                heatValue = _absoluteZeroPoint;
+            }
+            else if (value > _chemicalMaterial.meltingPoint)
+            {
+                heatValue = _chemicalMaterial.meltingPoint;
+            }
+            else
+            {
+                heatValue = value;
+            }
+        } 
+    }
+
+    public float heatValue = 0f;
+    public float heatBeforeVisualUpdate = 0f;
 
     private Heat[] _heatNeighbors;
 
@@ -66,7 +85,7 @@ public class Heat : MonoBehaviour
 
         _temperatureChangeForNeighbors = new float[heatMapGenerator.heatGrid.Length];
 
-        heatMapGenerator.heatMapUpdater.UpdateHeatColor(this, heat, heatBeforeVisualUpdate, meshRenderer, propertyBlock, true);
+        heatMapGenerator.heatMapUpdater.UpdateHeatColor(this, HeatP, heatBeforeVisualUpdate, meshRenderer, propertyBlock, true);
     }
 
     private void Update()
@@ -161,7 +180,7 @@ public class Heat : MonoBehaviour
         Profiler.BeginSample("Change in temperature calculation");
         foreach (Heat neighbor in _heatNeighbors)
         {
-            float deltaTemperature = heat - neighbor.heat;
+            float deltaTemperature = HeatP - neighbor.HeatP;
 
             float changeInTemperature = 0f;
 
@@ -181,13 +200,13 @@ public class Heat : MonoBehaviour
             Heat heatComponent = _heatNeighbors[i];
             float deltaTemperature = _temperatureChangeForNeighbors[heatComponent.heatID];
 
-            heatComponent.heat += deltaTemperature;
-            this.heat -= deltaTemperature;
+            heatComponent.HeatP += deltaTemperature;
+            this.HeatP -= deltaTemperature;
 
-            heatMapGenerator.heatMapUpdater.UpdateHeatColor(heatComponent, heatComponent.heat, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, false);
+            heatMapGenerator.heatMapUpdater.UpdateHeatColor(heatComponent, heatComponent.HeatP, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, false);
         }
 
-        heatMapGenerator.heatMapUpdater.UpdateHeatColor(this, heat, heatBeforeVisualUpdate, meshRenderer, propertyBlock, false);
+        heatMapGenerator.heatMapUpdater.UpdateHeatColor(this, HeatP, heatBeforeVisualUpdate, meshRenderer, propertyBlock, false);
         Profiler.EndSample();
     }
 }

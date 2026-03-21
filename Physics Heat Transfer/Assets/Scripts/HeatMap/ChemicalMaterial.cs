@@ -7,4 +7,5 @@ public class ChemicalMaterial : ScriptableObject
     public float distancePerCubeInSquareCm = 1.0f;
     public float densityPerCubicCm = 7.87f;
     public float specificHeat = 0.45f;//joules per gramm for 1 degree increase in temperature
+    public float meltingPoint = 1000f;//in celsius
 }

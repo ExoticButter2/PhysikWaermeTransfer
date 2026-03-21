@@ -45,7 +45,7 @@ public class Blowtorch : MonoBehaviour
                 return;
             }
 
-            heatComponent.heat += _degreesPerSecond * Time.deltaTime;
+            heatComponent.HeatP += _degreesPerSecond * Time.deltaTime;
         }
     }
 

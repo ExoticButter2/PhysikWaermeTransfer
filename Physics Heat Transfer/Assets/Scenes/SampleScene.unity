@@ -12949,14 +12949,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: blowtorch
       objectReference: {fileID: 0}
-    - target: {fileID: 7466380741590078738, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: _degreesPerSecond
-      value: 2000
-      objectReference: {fileID: 0}
-    - target: {fileID: 7466380741590078738, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: _heatLayerMask.m_Bits
-      value: 8
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

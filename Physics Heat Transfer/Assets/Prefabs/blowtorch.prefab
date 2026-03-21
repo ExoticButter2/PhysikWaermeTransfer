@@ -4958,3 +4958,4 @@ MonoBehaviour:
   _heatLayerMask:
     serializedVersion: 2
     m_Bits: 8
+  _flameParticleSystem: {fileID: 6628761456674307633}
