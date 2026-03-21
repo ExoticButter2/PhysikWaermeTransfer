@@ -3680,7 +3680,7 @@ MonoBehaviour:
   heatMapUpdater: {fileID: 397451423}
   _materialData: {fileID: 11400000, guid: fa4d356e70e792c42a130320df6b75a8, type: 2}
   _materialObject: {fileID: 397451420}
-  cellSize: 0.25
+  cellSize: 0.1
 --- !u!114 &397451423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8161,6 +8161,63 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Atom
   _atomNucleus: {fileID: 0}
   _electrons: []
+--- !u!1001 &930365764
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.00000019470718
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6481444979440996849, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
+      propertyPath: m_Name
+      value: blowtorch
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
 --- !u!1 &940467796
 GameObject:
   m_ObjectHideFlags: 0
@@ -12897,63 +12954,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Atom
   _atomNucleus: {fileID: 0}
   _electrons: []
---- !u!1001 &1502050522
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -6.651
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.00000019470718
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5960909324420221771, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6481444979440996849, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
-      propertyPath: m_Name
-      value: blowtorch
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 49087abe5ec2fb14c8cd4be4c9275358, type: 3}
 --- !u!1 &1502214213
 GameObject:
   m_ObjectHideFlags: 0
@@ -18898,9 +18898,9 @@ SceneRoots:
   - {fileID: 1787066529}
   - {fileID: 1399657689}
   - {fileID: 397451421}
-  - {fileID: 1502050522}
   - {fileID: 957140338}
   - {fileID: 1116259402}
   - {fileID: 70224764}
   - {fileID: 1370870000}
   - {fileID: 2133918715}
+  - {fileID: 930365764}

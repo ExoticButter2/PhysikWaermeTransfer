@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Iron
   m_EditorClassIdentifier: Assembly-CSharp::ChemicalMaterial
   heatConductivity: 1
-  heatCapacity: 450
+  distancePerCubeInSquareCm: 1
+  densityPerCubicCm: 7.87
+  specificHeat: 0.45
