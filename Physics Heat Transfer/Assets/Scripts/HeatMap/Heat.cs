@@ -40,10 +40,6 @@ public class Heat : MonoBehaviour
             {
                 heatValue = _absoluteZeroPoint;
             }
-            else if (value > _chemicalMaterial.meltingPoint)
-            {
-                heatValue = _chemicalMaterial.meltingPoint;
-            }
             else
             {
                 heatValue = value;
