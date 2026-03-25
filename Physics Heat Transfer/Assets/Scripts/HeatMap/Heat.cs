@@ -210,13 +210,13 @@ public class Heat : MonoBehaviour
 
         float changeInTemperature = 0f;
 
-        float temperatureGradient = deltaTemperature / distancePerCubeInSquareCm;//1 is 1^2cm distance, get heatflux for deltaT
+        float temperatureGradient = deltaTemperature / distancePerCubeInSquareCm;
 
         float heatFlux = thermalConductivity * temperatureGradient;
-        // Waermestromdichte = Waermeleitfaehigkeit * (deltaTemperatur / Distanz)
+        // Waermestrom = Waermeleitfaehigkeit * Temperaturgradient
 
         changeInTemperature = (heatFlux * Time.deltaTime) / (densityPerCubicCm * specificHeat * distancePerCubeInSquareCm);
-        // deltaTemperatur = (Waermestromdichte) / (Dichte * spezifische Waerme * Volumen (hier aber distanz weil es im modell wuerfeln sind))
+        // deltaTemperatur = (Waermestromdichte) / (Dichte * spezifische Waerme * Volumen (hier aber distanz, da es im modell wuerfeln sind))
 
         Profiler.EndSample();
 
