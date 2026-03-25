@@ -22,8 +22,7 @@ public class HeatMapGenerator : MonoBehaviour
     [HideInInspector]
     public Heat[,,] heatGrid;
 
-    [SerializeField]
-    private float cellSize = 0.1f;
+    public float cellSize = 0.1f;
 
     private void Awake()
     {
@@ -44,6 +43,7 @@ public class HeatMapGenerator : MonoBehaviour
                 {
                     GameObject cubeMaterial = Instantiate(cubeMaterialPrefab, new Vector3(x * cellSize, y * cellSize, z * cellSize), Quaternion.identity, gameObject.transform);
                     Heat cubeHeatComponent = cubeMaterial.GetComponent<Heat>();
+                    cubeMaterial.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
 
                     if (cubeHeatComponent == null)
                     {
@@ -54,6 +54,9 @@ public class HeatMapGenerator : MonoBehaviour
                     cubeHeatComponent.gridX = x;
                     cubeHeatComponent.gridY = y;
                     cubeHeatComponent.gridZ = z;
+
+                    cubeHeatComponent.distancePerCubeInSquareCm = cellSize;
+                    cubeHeatComponent.thermalConductivity = _materialData.thermalConductivity;
 
                     cubeHeatComponent.heatID = idCounter;
 
