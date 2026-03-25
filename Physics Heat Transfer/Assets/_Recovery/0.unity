@@ -3677,11 +3677,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeatMapGenerator
   cubeMaterialPrefab: {fileID: 3016179240409142801, guid: 4717c6de511e6d048bab0591c1e50c83, type: 3}
-  heightWidth: 15
+  heightWidth: 30
   heatMapUpdater: {fileID: 397451423}
   _materialData: {fileID: 11400000, guid: fa4d356e70e792c42a130320df6b75a8, type: 2}
   _materialObject: {fileID: 397451420}
   cellSize: 1
+  scaleFactor: 0.2
 --- !u!114 &397451423
 MonoBehaviour:
   m_ObjectHideFlags: 0

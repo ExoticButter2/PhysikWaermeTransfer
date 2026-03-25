@@ -12,6 +12,9 @@ public class Heat : MonoBehaviour
     public int heatID = 0;
 
     [HideInInspector]
+    public float pendingDeltaTemperature = 0f;
+
+    [HideInInspector]
     public MaterialPropertyBlock propertyBlock;
     [HideInInspector]
     public MeshRenderer meshRenderer;
@@ -50,9 +53,7 @@ public class Heat : MonoBehaviour
     public float heatValue = 0f;
     public float heatBeforeVisualUpdate = 0f;
 
-    private List<Heat> _heatNeighbors;
-
-    private List<float> _temperatureChangeForNeighbors;
+    private List<Heat> _heatNeighbors = new List<Heat>();
 
     [SerializeField]
     private ChemicalMaterial _chemicalMaterial;
@@ -61,22 +62,16 @@ public class Heat : MonoBehaviour
     public float distancePerCubeInSquareCm = 0f;
     [HideInInspector]
     public float thermalConductivity = 0f;
-    private float _specificHeat = 0f;
-    private float _densityPerCubicCm = 0f;
+    [HideInInspector]
+    public float specificHeat = 0f;
+    [HideInInspector]
+    public float densityPerCubicCm = 0f;
 
     private void InitializeVariables()
     {
-        _specificHeat = _chemicalMaterial.specificHeat;
-        _densityPerCubicCm = heatMapGenerator.cellSize;
-
         meshRenderer = transform.GetComponent<MeshRenderer>();
         propertyBlock = new MaterialPropertyBlock();
         heatMapGenerator = transform.parent.GetComponent<HeatMapGenerator>();
-    }
-
-    private void Awake()
-    {
-        _temperatureChangeForNeighbors = new List<float>();
     }
 
     private void Start()
@@ -183,12 +178,7 @@ public class Heat : MonoBehaviour
             neighbors.Add(backNeighbor);
         }
 
-        _heatNeighbors = new List<Heat>();
-
-        for (int i = 0; i < neighbors.Count; i++)
-        {
-            _heatNeighbors[i] = neighbors[i];
-        }
+        _heatNeighbors = new List<Heat>(neighbors);
         #endregion
     }
 
@@ -199,48 +189,38 @@ public class Heat : MonoBehaviour
         foreach (Heat heat in _heatNeighbors)
         {
             float deltaTemperature = CalculateDeltaTemperature(heat);
-            ApplyTemperatureTo(heat, deltaTemperature);
+            heat.pendingDeltaTemperature = deltaTemperature;
 
             totalDeltaTemperature += deltaTemperature;
         }
 
-        ApplyTemperatureTo(this, totalDeltaTemperature);
+        foreach (Heat heat in _heatNeighbors)
+        {
+            ApplyTemperatureTo(heat, heat.pendingDeltaTemperature);
+            heat.pendingDeltaTemperature = 0f;
+        }
+
+        ApplyTemperatureTo(this, -totalDeltaTemperature);
     }
 
     public float CalculateDeltaTemperature(Heat neighbor)
     {
-        _temperatureChangeForNeighbors.Clear();
-
         Profiler.BeginSample("Change in temperature calculation");
         float deltaTemperature = HeatP - neighbor.HeatP;
 
         float changeInTemperature = 0f;
 
-        float temperatureGradient = (deltaTemperature / distancePerCubeInSquareCm);//1 is 1^2cm distance, get heatflux for deltaT
+        float temperatureGradient = deltaTemperature / distancePerCubeInSquareCm;//1 is 1^2cm distance, get heatflux for deltaT
 
         float heatFlux = thermalConductivity * temperatureGradient;
         // Waermestromdichte = Waermeleitfaehigkeit * (deltaTemperatur / Distanz)
 
-        changeInTemperature = (heatFlux * Time.deltaTime) / (_densityPerCubicCm * _specificHeat * distancePerCubeInSquareCm);
+        changeInTemperature = (heatFlux * Time.deltaTime) / (densityPerCubicCm * specificHeat * distancePerCubeInSquareCm);
         // deltaTemperatur = (Waermestromdichte) / (Dichte * spezifische Waerme * Volumen (hier aber distanz weil es im modell wuerfeln sind))
 
-        _temperatureChangeForNeighbors[neighbor.gameObject.GetInstanceID()] = changeInTemperature;
+        Profiler.EndSample();
 
         return changeInTemperature;
-        //Profiler.EndSample();
-
-        //Profiler.BeginSample("Application of temperature change (heat map visual and heat in component)");
-        //for (int i = 0; i < _heatNeighbors.Count; i++)
-        //{
-        //    Heat heatComponent = _heatNeighbors[i];
-        //    float deltaTemperature = _temperatureChangeForNeighbors[heatComponent.gameObject.GetInstanceID()];
-
-        //    heatComponent.HeatP += deltaTemperature;
-        //    this.HeatP -= deltaTemperature;
-
-        //    heatMapGenerator.heatMapUpdater.UpdateHeatColor(heatComponent, heatComponent.HeatP, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, false);
-        //}
-        //Profiler.EndSample();
     }
 
     private void ApplyTemperatureTo(Heat heatComponent, float deltaTemperature)

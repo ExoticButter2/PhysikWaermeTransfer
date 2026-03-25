@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6498f5772239e634e80ef25032ae3ee1, type: 3}
   m_Name: Iron
   m_EditorClassIdentifier: Assembly-CSharp::ChemicalMaterial
-  heatConductivity: 1
-  distancePerCubeInSquareCm: 1
+  thermalConductivity: 0.804
   densityPerCubicCm: 7.87
   specificHeat: 0.45

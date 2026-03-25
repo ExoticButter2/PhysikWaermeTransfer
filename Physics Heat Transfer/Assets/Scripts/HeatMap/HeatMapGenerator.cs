@@ -9,7 +9,11 @@ public class HeatMapGenerator : MonoBehaviour
     private GameObject cubeMaterialPrefab;
 
     [SerializeField]
-    public int heightWidth = 16;
+    public int height = 5;
+    [SerializeField]
+    public int width = 8;
+    [SerializeField]
+    public int depth = 2;
 
     public HeatMapUpdater heatMapUpdater;
 
@@ -23,6 +27,7 @@ public class HeatMapGenerator : MonoBehaviour
     public Heat[,,] heatGrid;
 
     public float cellSize = 0.1f;
+    public float scaleFactor = 1.0f;
 
     private void Awake()
     {
@@ -33,17 +38,17 @@ public class HeatMapGenerator : MonoBehaviour
     {
         int idCounter = 0;
 
-        heatGrid = new Heat[heightWidth, heightWidth, heightWidth];
+        heatGrid = new Heat[width, height, depth];
 
-        for (int x = 0; x < heightWidth; x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < heightWidth; y++)
+            for (int y = 0; y < height; y++)
             {
-                for (int z = 0; z < heightWidth; z++)
+                for (int z = 0; z < depth; z++)
                 {
-                    GameObject cubeMaterial = Instantiate(cubeMaterialPrefab, new Vector3(x * cellSize, y * cellSize, z * cellSize), Quaternion.identity, gameObject.transform);
+                    GameObject cubeMaterial = Instantiate(cubeMaterialPrefab, new Vector3(x * cellSize * scaleFactor, y * cellSize * scaleFactor, z * cellSize * scaleFactor), Quaternion.identity, gameObject.transform);
                     Heat cubeHeatComponent = cubeMaterial.GetComponent<Heat>();
-                    cubeMaterial.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
+                    cubeMaterial.transform.localScale = new Vector3(cellSize * scaleFactor, cellSize * scaleFactor, cellSize * scaleFactor);
 
                     if (cubeHeatComponent == null)
                     {
@@ -57,6 +62,9 @@ public class HeatMapGenerator : MonoBehaviour
 
                     cubeHeatComponent.distancePerCubeInSquareCm = cellSize;
                     cubeHeatComponent.thermalConductivity = _materialData.thermalConductivity;
+                    cubeHeatComponent.heatMapGenerator = this;
+                    cubeHeatComponent.densityPerCubicCm = _materialData.densityPerCubicCm;
+                    cubeHeatComponent.specificHeat = _materialData.specificHeat;
 
                     cubeHeatComponent.heatID = idCounter;
 
