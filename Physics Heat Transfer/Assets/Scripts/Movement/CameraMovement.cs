@@ -3,13 +3,15 @@ using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
-    public InputActionReference moveInput;
+    public InputActionReference horizontalMovementInput;
+    public InputActionReference verticalMovementInput;
     public InputActionReference lookInput;
     public InputActionReference startLookKey;
 
     private bool _lookEnabled = false;
 
-    private Vector2 _moveVector = Vector2.zero;
+    private Vector2 _moveHorizontalVector = Vector2.zero;
+    private float _moveVerticalValue = 0f;
 
     private Transform _cameraTransform;
 
@@ -37,7 +39,7 @@ public class CameraMovement : MonoBehaviour
 
     private void Update()
     {
-        if (_moveVector != Vector2.zero)
+        if (_moveHorizontalVector != Vector2.zero || _moveVerticalValue != 0f)
         {
             MoveCamera();
         }
@@ -88,17 +90,27 @@ public class CameraMovement : MonoBehaviour
 
     private void StartMove(InputAction.CallbackContext ctx)
     {
-        _moveVector = ctx.ReadValue<Vector2>() * _moveSensitivity;
+        _moveHorizontalVector = ctx.ReadValue<Vector2>() * _moveSensitivity;
+    }
+
+    private void StartVerticalMove(InputAction.CallbackContext ctx)
+    {
+        _moveVerticalValue = ctx.ReadValue<float>() * _moveSensitivity;
     }
 
     private void StopMove(InputAction.CallbackContext ctx)
     {
-        _moveVector = Vector2.zero;
+        _moveHorizontalVector = Vector2.zero;
+    }
+
+    private void StopVerticalMove(InputAction.CallbackContext ctx)
+    {
+        _moveVerticalValue = 0f;
     }
 
     private void MoveCamera()
     {
-        Vector3 positionAddVector = _cameraTransform.forward * _moveVector.y + _cameraTransform.right * _moveVector.x;
+        Vector3 positionAddVector = (_cameraTransform.forward * _moveHorizontalVector.y) + (_cameraTransform.right * _moveHorizontalVector.x) + (_cameraTransform.up * _moveVerticalValue);
         _cameraTransform.position += positionAddVector * Time.deltaTime;
     }
 
@@ -106,8 +118,10 @@ public class CameraMovement : MonoBehaviour
     {
         startLookKey.action.started += EnableLook;
         startLookKey.action.canceled += DisableLook;
-        moveInput.action.performed += StartMove;
-        moveInput.action.canceled += StopMove;
+        horizontalMovementInput.action.performed += StartMove;
+        horizontalMovementInput.action.canceled += StopMove;
+        verticalMovementInput.action.performed += StartVerticalMove;
+        verticalMovementInput.action.canceled += StopVerticalMove;
         lookInput.action.performed += Look;
         InputSystem.onAfterUpdate += MoveMouseToLockPosition;
     }
@@ -116,8 +130,10 @@ public class CameraMovement : MonoBehaviour
     {
         startLookKey.action.started -= EnableLook;
         startLookKey.action.canceled -= DisableLook;
-        moveInput.action.performed -= StartMove;
-        moveInput.action.canceled -= StopMove;
+        horizontalMovementInput.action.performed -= StartMove;
+        horizontalMovementInput.action.canceled -= StopMove;
+        verticalMovementInput.action.performed -= StartVerticalMove;
+        verticalMovementInput.action.canceled -= StopVerticalMove;
         lookInput.action.performed -= Look;
         InputSystem.onAfterUpdate -= MoveMouseToLockPosition;
     }

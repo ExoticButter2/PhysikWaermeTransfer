@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: BGYR
   m_EditorClassIdentifier: Assembly-CSharp::HeatMap
   heatMapImage: {fileID: 2800000, guid: e890684a6b6375b43938558e2526f744, type: 3}
-  maxTemperature: 1200
+  maxTemperature: 400
   minTemperature: 0
