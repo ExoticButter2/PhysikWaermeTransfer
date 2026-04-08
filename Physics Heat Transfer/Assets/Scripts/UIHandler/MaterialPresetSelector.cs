@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class MaterialPresetSelector : MonoBehaviour
@@ -11,8 +12,7 @@ public class MaterialPresetSelector : MonoBehaviour
     [HideInInspector]
     public Material _selectedMaterialPreset;
 
-    [SerializeField]
-    private Dictionary<Button, Material> _buttonMaterialPresetDictionary = new Dictionary<Button, Material>();
+    private SerializedDictionary<Button, Material> _buttonMaterialPresetDictionary = new SerializedDictionary<Button, Material>();
 
     private void Awake()
     {
