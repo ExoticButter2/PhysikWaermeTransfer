@@ -3,32 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using AYellowpaper.SerializedCollections;
+using TMPro;
 
 public class MaterialPresetSelector : MonoBehaviour
 {
+    public static MaterialPresetSelector Instance;
+
     [SerializeField]
-    private Material _defaultMaterialPreset;
+    private TextMeshProUGUI _materialPresetTextLabel;
+
+    [SerializeField]
+    private ChemicalMaterial _defaultMaterialPreset;
 
     [HideInInspector]
-    public Material _selectedMaterialPreset;
+    public ChemicalMaterial selectedMaterialPreset;
 
-    private SerializedDictionary<Button, Material> _buttonMaterialPresetDictionary = new SerializedDictionary<Button, Material>();
+    [SerializedDictionary(keyName: "Button", valueName: "Material Preset")]
+    public AYellowpaper.SerializedCollections.SerializedDictionary<Button, ChemicalMaterial> buttonMaterialPresetDictionary = new AYellowpaper.SerializedCollections.SerializedDictionary<Button, ChemicalMaterial>();
 
     private void Awake()
     {
-        _selectedMaterialPreset = _defaultMaterialPreset;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        SelectMaterialPreset(_defaultMaterialPreset);
     }
 
     private void Start()
     {
-        foreach (Button button in _buttonMaterialPresetDictionary.Keys)
+        foreach (Button button in buttonMaterialPresetDictionary.Keys)
         {
-            button.onClick.AddListener(() => SelectMaterialPreset(_buttonMaterialPresetDictionary[button]));
+            button.onClick.AddListener(() => SelectMaterialPreset(buttonMaterialPresetDictionary[button]));
         }
     }
 
-    public void SelectMaterialPreset(Material materialPreset)
+    public void SelectMaterialPreset(ChemicalMaterial materialPreset)
     {
-        _selectedMaterialPreset = materialPreset;
+        selectedMaterialPreset = materialPreset;
+        _materialPresetTextLabel.text = $"Material: {selectedMaterialPreset.germanMaterialName}";
+        Debug.Log("Changed material preset for material generation!");
     }
 }

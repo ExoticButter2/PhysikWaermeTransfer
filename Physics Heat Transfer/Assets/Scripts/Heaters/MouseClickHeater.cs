@@ -38,6 +38,20 @@ public class MouseClickHeater : MonoBehaviour
         }
     }
 
+    public void OnTemperatureIncreasePerSecondChange(string newValueString)
+    {
+        Debug.Log($"New value string: {newValueString}");
+
+        if (float.TryParse(newValueString, out float newValue))
+        {
+            _kelvinIncreasePerSecond = newValue;
+        }
+        else
+        {
+            Debug.LogWarning("Could not parse new value for temperature increase per second!");
+        }
+    }
+
     private void StartHeatingObject(InputAction.CallbackContext ctx)
     {
         _heatingEnabled = true;

@@ -10,6 +10,8 @@ public class TemperatureUIHandler : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _heatTextLabel;
 
+    public TextMeshProUGUI unitTextLabel;
+
     [SerializeField]
     private Canvas _heatUICanvas;
 

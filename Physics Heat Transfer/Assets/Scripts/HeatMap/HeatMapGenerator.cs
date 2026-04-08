@@ -1,12 +1,23 @@
+using AYellowpaper.SerializedCollections;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
 public class HeatMapGenerator : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject cubeMaterialPrefab;
+    private int _idCounter = 0;
+
+    public static HeatMapGenerator Instance;
+
+    [HideInInspector]
+    public List<GameObject> heatMapParents = new List<GameObject>();
+    [HideInInspector]
+    public List<HeatGridData> heatGridDataList = new List<HeatGridData>();
+
+    [SerializedDictionary(keyName: "Material", valueName: "Prefab")]
+    public SerializedDictionary<ChemicalMaterial, GameObject> chemicalMaterialPrefab = new SerializedDictionary<ChemicalMaterial, GameObject>();
 
     [SerializeField]
     public int height = 5;
@@ -15,13 +26,8 @@ public class HeatMapGenerator : MonoBehaviour
     [SerializeField]
     public int depth = 2;
 
-    public HeatMapUpdater heatMapUpdater;
-
     [SerializeField]
     private ChemicalMaterial _materialData;
-
-    [SerializeField]
-    private GameObject _materialObject;
 
     [HideInInspector]
     public Heat[,,] heatGrid;
@@ -31,12 +37,24 @@ public class HeatMapGenerator : MonoBehaviour
 
     private void Awake()
     {
-        InitializeHeatGrid();
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    private void InitializeHeatGrid()
+    public void InitializeHeatGrid(ChemicalMaterial material, Vector3 parentPosition)
     {
-        int idCounter = 0;
+        GameObject materialParentObject = new GameObject();
+        materialParentObject.name = $"{material.englishMaterialName} block";
+        materialParentObject.transform.position = parentPosition;
+
+        heatMapParents.Add(materialParentObject);
 
         heatGrid = new Heat[width, height, depth];
 
@@ -46,7 +64,7 @@ public class HeatMapGenerator : MonoBehaviour
             {
                 for (int z = 0; z < depth; z++)
                 {
-                    GameObject cubeMaterial = Instantiate(cubeMaterialPrefab, new Vector3(x * cellSize * scaleFactor, y * cellSize * scaleFactor, z * cellSize * scaleFactor), Quaternion.identity, gameObject.transform);
+                    GameObject cubeMaterial = Instantiate(chemicalMaterialPrefab[material], new Vector3(x * cellSize * scaleFactor, y * cellSize * scaleFactor, z * cellSize * scaleFactor), Quaternion.identity, materialParentObject.transform);
                     Heat cubeHeatComponent = cubeMaterial.GetComponent<Heat>();
                     cubeMaterial.transform.localScale = new Vector3(cellSize * scaleFactor, cellSize * scaleFactor, cellSize * scaleFactor);
 
@@ -60,21 +78,36 @@ public class HeatMapGenerator : MonoBehaviour
                     cubeHeatComponent.gridY = y;
                     cubeHeatComponent.gridZ = z;
 
-                    cubeHeatComponent.distancePerCubeInSquareCm = cellSize;
-                    cubeHeatComponent.thermalConductivity = _materialData.thermalConductivity;
-                    cubeHeatComponent.heatMapGenerator = this;
-                    cubeHeatComponent.densityPerCubicCm = _materialData.densityPerCubicCm;
-                    cubeHeatComponent.specificHeat = _materialData.specificHeat;
-
-                    cubeHeatComponent.heatID = idCounter;
+                    cubeHeatComponent.heatID = _idCounter;
 
                     cubeMaterial.layer = LayerMask.NameToLayer("HeatComponent");
 
                     heatGrid[x, y, z] = cubeHeatComponent;
 
-                    idCounter++;
+                    _idCounter++;
                 }
             }
         }
+
+        HeatGridData heatGridData = materialParentObject.AddComponent<HeatGridData>();
+        heatGridDataList.Add(heatGridData);
+
+        heatGridData._heatGrid = heatGrid;
+        heatGridData._cellSize = cellSize;
+
+        foreach (Heat heatComponent in heatGridData._heatGrid)
+        {
+            heatComponent._heatGridData = heatGridData;
+        }
+    }
+
+    public void ClearAllHeatGrids()
+    {
+        foreach (GameObject heatMapParent in heatMapParents)
+        {
+            Destroy(heatMapParent);
+        }
+        heatMapParents.Clear();
+        heatGridDataList.Clear();
     }
 }

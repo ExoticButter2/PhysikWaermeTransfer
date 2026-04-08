@@ -4,6 +4,10 @@ using UnityEngine.Profiling;
 
 public class HeatMapUpdater : MonoBehaviour
 {
+    public bool heatMapEnabled = true;
+
+    public static HeatMapUpdater Instance;
+
     [SerializeField]
     private HeatMap _heatMap;
 
@@ -11,6 +15,22 @@ public class HeatMapUpdater : MonoBehaviour
 
     [SerializeField]
     private float _heatChangeNeededForVisual = 0.1f;
+
+    [SerializeField]
+    private Material _heatMapMaterial;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public void UpdateHeatColor(Heat heatComponent, float heat, float lastHeat, MeshRenderer meshRenderer, MaterialPropertyBlock propertyBlock, bool forceUpdate)
     {
@@ -32,5 +52,63 @@ public class HeatMapUpdater : MonoBehaviour
         meshRenderer.SetPropertyBlock(propertyBlock);
 
         Profiler.EndSample();
+    }
+
+    public void ToggleHeatMapMode(bool mode)
+    {
+        heatMapEnabled = !heatMapEnabled;
+
+        if (mode)
+        {
+            foreach (HeatGridData heatGridData in HeatMapGenerator.Instance.heatGridDataList)
+            {
+                foreach (Heat heatComponent in heatGridData._heatGrid)
+                {
+                    SetToHeatMapMaterial(heatComponent);
+                }
+            }
+        }
+        else
+        {
+            foreach (HeatGridData heatGridData in HeatMapGenerator.Instance.heatGridDataList)
+            {
+                foreach (Heat heatComponent in heatGridData._heatGrid)
+                {
+                    SetToNormalMaterial(heatComponent);
+                }
+            }
+        }
+    }
+
+    private void SetToNormalMaterial(Heat heatObjectComponent)
+    {
+        MeshRenderer renderer = heatObjectComponent.gameObject.GetComponent<MeshRenderer>();
+
+        if (renderer == null)
+        {
+            Debug.LogWarning("No renderer found inside heat object");
+            return;
+        }
+
+        renderer.SetPropertyBlock(null);
+        renderer.material = heatObjectComponent.chemicalMaterial.visualMaterial;
+
+        heatObjectComponent.propertyBlock = new MaterialPropertyBlock();
+    }
+
+    private void SetToHeatMapMaterial(Heat heatObjectComponent)
+    {
+        MeshRenderer renderer = heatObjectComponent.gameObject.GetComponent<MeshRenderer>();
+
+        if (renderer == null)
+        {
+            Debug.LogWarning("No renderer found inside heat object");
+            return;
+        }
+
+        renderer.SetPropertyBlock(null);
+        renderer.material = _heatMapMaterial;
+
+        heatObjectComponent.propertyBlock = new MaterialPropertyBlock();
     }
 }

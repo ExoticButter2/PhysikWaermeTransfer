@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6498f5772239e634e80ef25032ae3ee1, type: 3}
   m_Name: Copper
   m_EditorClassIdentifier: Assembly-CSharp::ChemicalMaterial
+  englishMaterialName: Copper
+  germanMaterialName: Kupfer
   thermalConductivity: 4.01
   densityPerCubicCm: 8.96
   specificHeat: 0.386
+  visualMaterial: {fileID: 2100000, guid: 2bfa675950e97234f828829fcf6f5f36, type: 2}

@@ -10,8 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6498f5772239e634e80ef25032ae3ee1, type: 3}
-  m_Name: Iron
+  m_Name: Brass
   m_EditorClassIdentifier: Assembly-CSharp::ChemicalMaterial
-  thermalConductivity: 0.804
-  densityPerCubicCm: 7.87
-  specificHeat: 0.45
+  englishMaterialName: Brass
+  germanMaterialName: Messing
+  thermalConductivity: 1.4687
+  densityPerCubicCm: 8.4
+  specificHeat: 0.38
+  visualMaterial: {fileID: 2100000, guid: 75a97849b65f4da46a983f61a1af6bfb, type: 2}

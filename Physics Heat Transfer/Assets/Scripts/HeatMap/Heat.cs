@@ -9,6 +9,7 @@ using System;
 
 public class Heat : MonoBehaviour
 {
+    [HideInInspector]
     public int heatID = 0;
 
     [HideInInspector]
@@ -25,8 +26,6 @@ public class Heat : MonoBehaviour
     public int gridY = 0;
     [HideInInspector]
     public int gridZ = 0;
-
-    public HeatMapGenerator heatMapGenerator;
 
     private float _absoluteZeroPoint = -273.15f;//in celsius
 
@@ -51,27 +50,20 @@ public class Heat : MonoBehaviour
     }
 
     public float heatValue = 0f;
+    [HideInInspector]
     public float heatBeforeVisualUpdate = 0f;
 
     private List<Heat> _heatNeighbors = new List<Heat>();
 
-    [SerializeField]
-    private ChemicalMaterial _chemicalMaterial;
+    public ChemicalMaterial chemicalMaterial;
 
     [HideInInspector]
-    public float distancePerCubeInSquareCm = 0f;
-    [HideInInspector]
-    public float thermalConductivity = 0f;
-    [HideInInspector]
-    public float specificHeat = 0f;
-    [HideInInspector]
-    public float densityPerCubicCm = 0f;
+    public HeatGridData _heatGridData;
 
     private void InitializeVariables()
     {
         meshRenderer = transform.GetComponent<MeshRenderer>();
         propertyBlock = new MaterialPropertyBlock();
-        heatMapGenerator = transform.parent.GetComponent<HeatMapGenerator>();
     }
 
     private void Start()
@@ -79,7 +71,10 @@ public class Heat : MonoBehaviour
         InitializeVariables();
         GetNeighbors();
 
-        heatMapGenerator.heatMapUpdater.UpdateHeatColor(this, HeatP, heatBeforeVisualUpdate, meshRenderer, propertyBlock, true);
+        if (HeatMapUpdater.Instance.heatMapEnabled)
+        {
+            HeatMapUpdater.Instance.UpdateHeatColor(this, HeatP, heatBeforeVisualUpdate, meshRenderer, propertyBlock, true);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -109,7 +104,7 @@ public class Heat : MonoBehaviour
 
     private void GetNeighbors()
     {
-        Heat[,,] heatGrid = heatMapGenerator.heatGrid;
+        Heat[,,] heatGrid = _heatGridData._heatGrid;
 
         int xMax = heatGrid.GetLength(0);
         int yMax = heatGrid.GetLength(1);
@@ -210,12 +205,12 @@ public class Heat : MonoBehaviour
 
         float changeInTemperature = 0f;
 
-        float temperatureGradient = deltaTemperature / distancePerCubeInSquareCm;
+        float temperatureGradient = deltaTemperature / _heatGridData._cellSize;
 
-        float heatFlux = thermalConductivity * temperatureGradient;
+        float heatFlux = chemicalMaterial.thermalConductivity * temperatureGradient;
         // Waermestrom = Waermeleitfaehigkeit * Temperaturgradient
 
-        changeInTemperature = (heatFlux * Time.deltaTime) / (densityPerCubicCm * specificHeat * distancePerCubeInSquareCm);
+        changeInTemperature = (heatFlux * Time.deltaTime) / (chemicalMaterial.densityPerCubicCm * chemicalMaterial.specificHeat * _heatGridData._cellSize);
         // deltaTemperatur = (Waermestromdichte) / (Dichte * spezifische Waerme * Volumen (hier aber distanz, da es im modell wuerfeln sind))
 
         Profiler.EndSample();
@@ -226,6 +221,10 @@ public class Heat : MonoBehaviour
     private void ApplyTemperatureTo(Heat heatComponent, float deltaTemperature)
     {
         heatComponent.HeatP += deltaTemperature;
-        heatMapGenerator.heatMapUpdater.UpdateHeatColor(heatComponent, heatComponent.HeatP, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, false);
+
+        if (HeatMapUpdater.Instance.heatMapEnabled)
+        {
+            HeatMapUpdater.Instance.UpdateHeatColor(heatComponent, heatComponent.HeatP, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, false);
+        }
     }
 }
