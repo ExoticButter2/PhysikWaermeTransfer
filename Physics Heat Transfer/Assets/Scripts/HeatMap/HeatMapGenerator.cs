@@ -15,6 +15,8 @@ public class HeatMapGenerator : MonoBehaviour
     public List<GameObject> heatMapParents = new List<GameObject>();
     [HideInInspector]
     public List<HeatGridData> heatGridDataList = new List<HeatGridData>();
+    [HideInInspector]
+    public Dictionary<int, Heat> heatIDToHeatComponent = new Dictionary<int, Heat>();
 
     [SerializedDictionary(keyName: "Material", valueName: "Prefab")]
     public SerializedDictionary<ChemicalMaterial, GameObject> chemicalMaterialPrefab = new SerializedDictionary<ChemicalMaterial, GameObject>();
@@ -51,8 +53,13 @@ public class HeatMapGenerator : MonoBehaviour
     public void InitializeHeatGrid(ChemicalMaterial material, Vector3 parentPosition)
     {
         GameObject materialParentObject = new GameObject();
+
+        Rigidbody parentRigidbody = materialParentObject.AddComponent<Rigidbody>();
+
         materialParentObject.name = $"{material.englishMaterialName} block";
-        materialParentObject.transform.position = parentPosition;
+        parentRigidbody.position = parentPosition;
+        parentRigidbody.isKinematic = true;
+        parentRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
         heatMapParents.Add(materialParentObject);
 
@@ -64,7 +71,7 @@ public class HeatMapGenerator : MonoBehaviour
             {
                 for (int z = 0; z < depth; z++)
                 {
-                    GameObject cubeMaterial = Instantiate(chemicalMaterialPrefab[material], new Vector3(x * cellSize * scaleFactor, y * cellSize * scaleFactor, z * cellSize * scaleFactor), Quaternion.identity, materialParentObject.transform);
+                    GameObject cubeMaterial = Instantiate(chemicalMaterialPrefab[material], materialParentObject.transform.position + new Vector3(x * cellSize * scaleFactor, y * cellSize * scaleFactor, z * cellSize * scaleFactor), Quaternion.identity, materialParentObject.transform);
                     Heat cubeHeatComponent = cubeMaterial.GetComponent<Heat>();
                     cubeMaterial.transform.localScale = new Vector3(cellSize * scaleFactor, cellSize * scaleFactor, cellSize * scaleFactor);
 
@@ -79,6 +86,7 @@ public class HeatMapGenerator : MonoBehaviour
                     cubeHeatComponent.gridZ = z;
 
                     cubeHeatComponent.heatID = _idCounter;
+                    heatIDToHeatComponent.Add(cubeHeatComponent.heatID, cubeHeatComponent);
 
                     cubeMaterial.layer = LayerMask.NameToLayer("HeatComponent");
 
@@ -92,6 +100,7 @@ public class HeatMapGenerator : MonoBehaviour
         HeatGridData heatGridData = materialParentObject.AddComponent<HeatGridData>();
         heatGridDataList.Add(heatGridData);
 
+        heatGridData.heatIDToHeatComponent = heatIDToHeatComponent;
         heatGridData._heatGrid = heatGrid;
         heatGridData._cellSize = cellSize;
 
@@ -99,6 +108,11 @@ public class HeatMapGenerator : MonoBehaviour
         {
             heatComponent._heatGridData = heatGridData;
         }
+
+        CollisionHandler parentCollisionHandler = materialParentObject.AddComponent<CollisionHandler>();
+        parentCollisionHandler.heatGridData = heatGridData;
+
+        parentRigidbody.isKinematic = false;
     }
 
     public void ClearAllHeatGrids()

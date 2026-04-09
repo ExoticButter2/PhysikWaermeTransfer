@@ -133,5 +133,6 @@ MonoBehaviour:
   gridZ: 0
   heatValue: 0
   heatBeforeVisualUpdate: 0
+  heatNeighbors: []
   chemicalMaterial: {fileID: 11400000, guid: c16f63623247a4942a5f2d7dadec3885, type: 2}
   _heatGridData: {fileID: 0}

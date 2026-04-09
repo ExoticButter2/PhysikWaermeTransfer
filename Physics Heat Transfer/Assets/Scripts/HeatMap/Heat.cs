@@ -53,7 +53,8 @@ public class Heat : MonoBehaviour
     [HideInInspector]
     public float heatBeforeVisualUpdate = 0f;
 
-    private List<Heat> _heatNeighbors = new List<Heat>();
+    [HideInInspector]
+    public List<Heat> heatNeighbors = new List<Heat>();
 
     public ChemicalMaterial chemicalMaterial;
 
@@ -70,31 +71,6 @@ public class Heat : MonoBehaviour
     {
         InitializeVariables();
         GetNeighbors();
-
-        if (HeatMapUpdater.Instance.heatMapEnabled)
-        {
-            HeatMapUpdater.Instance.UpdateHeatColor(this, HeatP, heatBeforeVisualUpdate, meshRenderer, propertyBlock, true);
-        }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        Heat heatComponent = collision.gameObject.GetComponent<Heat>();
-
-        if (heatComponent != null)
-        {
-            _heatNeighbors.Add(heatComponent);
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        Heat heatComponent = collision.gameObject.GetComponent<Heat>();
-
-        if (heatComponent != null && _heatNeighbors.Contains(heatComponent))
-        {
-            _heatNeighbors.Remove(heatComponent);
-        }
     }
 
     private void Update()
@@ -173,7 +149,7 @@ public class Heat : MonoBehaviour
             neighbors.Add(backNeighbor);
         }
 
-        _heatNeighbors = new List<Heat>(neighbors);
+        heatNeighbors = new List<Heat>(neighbors);
         #endregion
     }
 
@@ -181,7 +157,7 @@ public class Heat : MonoBehaviour
     {
         float totalDeltaTemperature = 0;
 
-        foreach (Heat heat in _heatNeighbors)
+        foreach (Heat heat in heatNeighbors)
         {
             float deltaTemperature = CalculateDeltaTemperature(heat);
             heat.pendingDeltaTemperature = deltaTemperature;
@@ -189,7 +165,7 @@ public class Heat : MonoBehaviour
             totalDeltaTemperature += deltaTemperature;
         }
 
-        foreach (Heat heat in _heatNeighbors)
+        foreach (Heat heat in heatNeighbors)
         {
             ApplyTemperatureTo(heat, heat.pendingDeltaTemperature);
             heat.pendingDeltaTemperature = 0f;
@@ -221,10 +197,6 @@ public class Heat : MonoBehaviour
     private void ApplyTemperatureTo(Heat heatComponent, float deltaTemperature)
     {
         heatComponent.HeatP += deltaTemperature;
-
-        if (HeatMapUpdater.Instance.heatMapEnabled)
-        {
-            HeatMapUpdater.Instance.UpdateHeatColor(heatComponent, heatComponent.HeatP, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, false);
-        }
+        HeatMapUpdater.Instance.UpdateHeatColor(heatComponent, heatComponent.HeatP, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, false);
     }
 }

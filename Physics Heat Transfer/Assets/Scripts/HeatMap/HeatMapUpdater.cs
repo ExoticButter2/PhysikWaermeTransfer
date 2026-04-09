@@ -4,7 +4,7 @@ using UnityEngine.Profiling;
 
 public class HeatMapUpdater : MonoBehaviour
 {
-    public bool heatMapEnabled = true;
+    public bool heatMapEnabled = false;
 
     public static HeatMapUpdater Instance;
 
@@ -34,7 +34,7 @@ public class HeatMapUpdater : MonoBehaviour
 
     public void UpdateHeatColor(Heat heatComponent, float heat, float lastHeat, MeshRenderer meshRenderer, MaterialPropertyBlock propertyBlock, bool forceUpdate)
     {
-        if (Mathf.Abs(heat - lastHeat) <= _heatChangeNeededForVisual && !forceUpdate)
+        if (Mathf.Abs(heat - lastHeat) <= _heatChangeNeededForVisual || !heatMapEnabled || forceUpdate)
         {
             return;
         }
@@ -56,7 +56,7 @@ public class HeatMapUpdater : MonoBehaviour
 
     public void ToggleHeatMapMode(bool mode)
     {
-        heatMapEnabled = !heatMapEnabled;
+        heatMapEnabled = mode;
 
         if (mode)
         {
@@ -65,6 +65,7 @@ public class HeatMapUpdater : MonoBehaviour
                 foreach (Heat heatComponent in heatGridData._heatGrid)
                 {
                     SetToHeatMapMaterial(heatComponent);
+                    UpdateHeatColor(heatComponent, heatComponent.heatValue, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, true);
                 }
             }
         }
