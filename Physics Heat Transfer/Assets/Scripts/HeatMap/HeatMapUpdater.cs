@@ -81,7 +81,7 @@ public class HeatMapUpdater : MonoBehaviour
         }
     }
 
-    private void SetToNormalMaterial(Heat heatObjectComponent)
+    public void SetToNormalMaterial(Heat heatObjectComponent)
     {
         MeshRenderer renderer = heatObjectComponent.gameObject.GetComponent<MeshRenderer>();
 
@@ -97,7 +97,7 @@ public class HeatMapUpdater : MonoBehaviour
         heatObjectComponent.propertyBlock = new MaterialPropertyBlock();
     }
 
-    private void SetToHeatMapMaterial(Heat heatObjectComponent)
+    public void SetToHeatMapMaterial(Heat heatObjectComponent)
     {
         MeshRenderer renderer = heatObjectComponent.gameObject.GetComponent<MeshRenderer>();
 

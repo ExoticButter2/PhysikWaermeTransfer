@@ -92,6 +92,11 @@ public class HeatMapGenerator : MonoBehaviour
 
                     heatGrid[x, y, z] = cubeHeatComponent;
 
+                    if (HeatMapUpdater.Instance.heatMapEnabled)
+                    {
+                        HeatMapUpdater.Instance.SetToHeatMapMaterial(cubeHeatComponent);
+                    }
+
                     _idCounter++;
                 }
             }
