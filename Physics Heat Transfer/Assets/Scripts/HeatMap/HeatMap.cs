@@ -5,6 +5,6 @@ public class HeatMap : ScriptableObject
 {
     public Texture2D heatMapImage;
 
-    public float maxTemperature = 200f;
-    public float minTemperature = 0f;
+    public double maxTemperature = 200f;
+    public double minTemperature = 0f;
 }

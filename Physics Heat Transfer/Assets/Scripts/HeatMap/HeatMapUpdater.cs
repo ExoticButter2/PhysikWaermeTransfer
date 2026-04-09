@@ -32,9 +32,26 @@ public class HeatMapUpdater : MonoBehaviour
         }
     }
 
-    public void UpdateHeatColor(Heat heatComponent, float heat, float lastHeat, MeshRenderer meshRenderer, MaterialPropertyBlock propertyBlock, bool forceUpdate)
+    public void UpdateHeatColor(Heat heatComponent, bool forceUpdate)
     {
-        if (Mathf.Abs(heat - lastHeat) <= _heatChangeNeededForVisual || !heatMapEnabled || forceUpdate)
+        MeshRenderer renderer = heatComponent.meshRenderer;
+        MaterialPropertyBlock propertyBlock = heatComponent.propertyBlock;
+        double lastHeat = heatComponent.heatBeforeVisualUpdate;
+        double heat = heatComponent.heatValue;
+
+        if (renderer == null)
+        {
+            Debug.LogWarning("No renderer inside heat component!");
+            return;
+        }
+
+        if (propertyBlock == null)
+        {
+            Debug.LogWarning("No property block inside heat component!");
+            return;
+        }
+
+        if ((Mathf.Abs((float)heat - (float)lastHeat) <= _heatChangeNeededForVisual || !heatMapEnabled) && !forceUpdate)
         {
             return;
         }
@@ -43,13 +60,13 @@ public class HeatMapUpdater : MonoBehaviour
 
         Profiler.BeginSample("Heat color update");
 
-        float rightAmount = Mathf.Clamp01(heat / _heatMap.maxTemperature);
+        float rightAmount = Mathf.Clamp01((float)heat / (float)_heatMap.maxTemperature);
 
         Color heatColor = _heatMap.heatMapImage.GetPixelBilinear(Mathf.Clamp01(rightAmount), 0.5f);//x coordinate depends on temperature
 
-        meshRenderer.GetPropertyBlock(propertyBlock);
+        renderer.GetPropertyBlock(propertyBlock);
         propertyBlock.SetColor(_baseColorId, heatColor);
-        meshRenderer.SetPropertyBlock(propertyBlock);
+        renderer.SetPropertyBlock(propertyBlock);
 
         Profiler.EndSample();
     }
@@ -65,7 +82,7 @@ public class HeatMapUpdater : MonoBehaviour
                 foreach (Heat heatComponent in heatGridData._heatGrid)
                 {
                     SetToHeatMapMaterial(heatComponent);
-                    UpdateHeatColor(heatComponent, heatComponent.heatValue, heatComponent.heatBeforeVisualUpdate, heatComponent.meshRenderer, heatComponent.propertyBlock, true);
+                    UpdateHeatColor(heatComponent, true);
                 }
             }
         }
@@ -111,5 +128,7 @@ public class HeatMapUpdater : MonoBehaviour
         renderer.material = _heatMapMaterial;
 
         heatObjectComponent.propertyBlock = new MaterialPropertyBlock();
+
+        UpdateHeatColor(heatObjectComponent, true);
     }
 }

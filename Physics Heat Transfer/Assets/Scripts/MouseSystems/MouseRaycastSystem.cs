@@ -50,7 +50,7 @@ public class MouseRaycastSystem : MonoBehaviour
 
             _cursorFacingHeatBlock = true;
 
-            MouseRaycastSystem.OnUpdateHeatUI?.Invoke(heatComponent.HeatP);
+            MouseRaycastSystem.OnUpdateHeatUI?.Invoke((float)heatComponent.HeatP);
         }
         else if (_cursorFacingHeatBlock)
         {

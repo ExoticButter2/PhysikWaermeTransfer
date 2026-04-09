@@ -32,7 +32,7 @@ public class HeatMapGenerator : MonoBehaviour
     private ChemicalMaterial _materialData;
 
     [HideInInspector]
-    public Heat[,,] heatGrid;
+    private Heat[,,] _heatGrid;
 
     public float cellSize = 0.1f;
     public float scaleFactor = 1.0f;
@@ -63,7 +63,7 @@ public class HeatMapGenerator : MonoBehaviour
 
         heatMapParents.Add(materialParentObject);
 
-        heatGrid = new Heat[width, height, depth];
+        _heatGrid = new Heat[width, height, depth];
 
         for (int x = 0; x < width; x++)
         {
@@ -90,7 +90,7 @@ public class HeatMapGenerator : MonoBehaviour
 
                     cubeMaterial.layer = LayerMask.NameToLayer("HeatComponent");
 
-                    heatGrid[x, y, z] = cubeHeatComponent;
+                    _heatGrid[x, y, z] = cubeHeatComponent;
 
                     if (HeatMapUpdater.Instance.heatMapEnabled)
                     {
@@ -106,7 +106,7 @@ public class HeatMapGenerator : MonoBehaviour
         heatGridDataList.Add(heatGridData);
 
         heatGridData.heatIDToHeatComponent = heatIDToHeatComponent;
-        heatGridData._heatGrid = heatGrid;
+        heatGridData._heatGrid = _heatGrid;
         heatGridData._cellSize = cellSize;
 
         foreach (Heat heatComponent in heatGridData._heatGrid)
@@ -128,5 +128,7 @@ public class HeatMapGenerator : MonoBehaviour
         }
         heatMapParents.Clear();
         heatGridDataList.Clear();
+        heatIDToHeatComponent.Clear();
+        _idCounter = 0;
     }
 }
