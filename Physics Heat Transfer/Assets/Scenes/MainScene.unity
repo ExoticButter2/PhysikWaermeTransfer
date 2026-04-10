@@ -6518,8 +6518,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 997088984}
   m_HandleRect: {fileID: 997088983}
   m_Direction: 2
-  m_Value: -0.000103015875
-  m_Size: 0.8667931
+  m_Value: 0
+  m_Size: 0.8613519
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9561,7 +9561,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 719.80005, y: 62.799988}
+  m_AnchoredPosition: {x: 719.80005, y: 62.80005}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &832575517
@@ -10825,7 +10825,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 44.14457}
+  m_AnchoredPosition: {x: 0, y: 44.140034}
   m_SizeDelta: {x: 0, y: 331.4}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &986352251
@@ -12466,7 +12466,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HeatMapUpdater
   heatMapEnabled: 0
   _heatMap: {fileID: 11400000, guid: f8af3f8926768324991bd698785ede51, type: 2}
-  _heatChangeNeededForVisual: 0.15
+  _heatChangeNeededForVisual: 0.01
   _heatMapMaterial: {fileID: 2100000, guid: 3261d06898377d24cba982a1ad37021a, type: 2}
 --- !u!114 &1068347083
 MonoBehaviour:
@@ -16574,7 +16574,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -5.4000244, y: -109.20001}
+  m_AnchoredPosition: {x: -5.3999023, y: -109.19995}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1493935372
@@ -18751,8 +18751,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1752370793}
   m_HandleRect: {fileID: 1752370792}
   m_Direction: 2
-  m_Value: -0.000054034346
-  m_Size: 0.6313199
+  m_Value: -0.00000036386766
+  m_Size: 0.62736714
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19033,7 +19033,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 167.74905}
+  m_AnchoredPosition: {x: 0, y: 167.74004}
   m_SizeDelta: {x: 0, y: 455}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1706719579

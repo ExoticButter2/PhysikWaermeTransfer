@@ -155,23 +155,21 @@ public class Heat : MonoBehaviour
 
     private void SimulateHeat()
     {
+        Profiler.BeginSample("Heat simulation");
         double totalDeltaTemperature = 0;
 
-        foreach (Heat heat in heatNeighbors)
-        {
-            double deltaTemperature = CalculateDeltaTemperature(heat);
-            heat.pendingDeltaTemperature = deltaTemperature;
+        int count = heatNeighbors.Count;
 
+        for (int i = 0; i < count; i++)
+        {
+            Heat heat = heatNeighbors[i];
+            double deltaTemperature = CalculateDeltaTemperature(heat);
+            ApplyTemperatureTo(heat, deltaTemperature);
             totalDeltaTemperature += deltaTemperature;
         }
 
-        foreach (Heat heat in heatNeighbors)
-        {
-            ApplyTemperatureTo(heat, heat.pendingDeltaTemperature);
-            heat.pendingDeltaTemperature = 0f;
-        }
-
         ApplyTemperatureTo(this, -totalDeltaTemperature);
+        Profiler.EndSample();
     }
 
     public double CalculateDeltaTemperature(Heat neighbor)
