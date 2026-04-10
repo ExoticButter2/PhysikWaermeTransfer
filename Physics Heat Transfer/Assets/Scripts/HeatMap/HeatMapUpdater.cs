@@ -35,7 +35,7 @@ public class HeatMapUpdater : MonoBehaviour
     public void UpdateHeatColor(Heat heatComponent, bool forceUpdate)
     {
         MeshRenderer renderer = heatComponent.meshRenderer;
-        MaterialPropertyBlock propertyBlock = heatComponent.propertyBlock;
+        //MaterialPropertyBlock propertyBlock = heatComponent.propertyBlock;
         double lastHeat = heatComponent.heatBeforeVisualUpdate;
         double heat = heatComponent.heatValue;
 
@@ -45,11 +45,11 @@ public class HeatMapUpdater : MonoBehaviour
             return;
         }
 
-        if (propertyBlock == null)
-        {
-            Debug.LogWarning("No property block inside heat component!");
-            return;
-        }
+        //if (propertyBlock == null)
+        //{
+        //    Debug.LogWarning("No property block inside heat component!");
+        //    return;
+        //}
 
         if ((Mathf.Abs((float)heat - (float)lastHeat) <= _heatChangeNeededForVisual || !heatMapEnabled) && !forceUpdate)
         {
@@ -64,9 +64,12 @@ public class HeatMapUpdater : MonoBehaviour
 
         Color heatColor = _heatMap.heatMapImage.GetPixelBilinear(Mathf.Clamp01(rightAmount), 0.5f);//x coordinate depends on temperature
 
-        renderer.GetPropertyBlock(propertyBlock);
-        propertyBlock.SetColor(_baseColorId, heatColor);
-        renderer.SetPropertyBlock(propertyBlock);
+        uint heatMapColor = ((uint)(heatColor.a * 255) << 24) | ((uint)(heatColor.b * 255) << 16) | ((uint)(heatColor.g * 255) << 8) | ((uint)(heatColor.r * 255) << 0);
+
+        renderer.SetShaderUserValue(heatMapColor);
+        //renderer.GetPropertyBlock(propertyBlock);
+        //propertyBlock.SetColor(_baseColorId, heatColor);
+        //renderer.SetPropertyBlock(propertyBlock);
 
         Profiler.EndSample();
     }
