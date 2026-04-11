@@ -19,6 +19,22 @@ public class HeatMapUpdater : MonoBehaviour
     [SerializeField]
     private Material _heatMapMaterial;
 
+    private uint[] _heatColorLUT;
+    [SerializeField]
+    private int _lookUpTableSize = 256;
+
+    private void Start()
+    {
+        _heatColorLUT = new uint[_lookUpTableSize];
+
+        for (int i = 0; i < _lookUpTableSize; i++)
+        {
+            float rightAmount = (float)i / (_lookUpTableSize - 1);
+            Color heatColor = _heatMap.heatMapImage.GetPixelBilinear(Mathf.Clamp01(rightAmount), 0.5f);
+            _heatColorLUT[i] = ((uint)(heatColor.a * 255) << 24) | ((uint)(heatColor.b * 255) << 16) | ((uint)(heatColor.g * 255) << 8) | ((uint)(heatColor.r * 255) << 0);
+        }
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -53,11 +69,11 @@ public class HeatMapUpdater : MonoBehaviour
 
         Profiler.BeginSample("Heat color update");
 
-        float rightAmount = Mathf.Clamp01((float)heat / (float)_heatMap.maxTemperature);
+        float rightAmount = Mathf.Clamp01((float)heat / (float)_heatMap.maxTemperature);//x coordinate depends on temperature
 
-        Color heatColor = _heatMap.heatMapImage.GetPixelBilinear(Mathf.Clamp01(rightAmount), 0.5f);//x coordinate depends on temperature
+        int index = Mathf.Clamp((int)(rightAmount * (_lookUpTableSize - 1)), 0, _lookUpTableSize - 1);
 
-        uint heatMapColor = ((uint)(heatColor.a * 255) << 24) | ((uint)(heatColor.b * 255) << 16) | ((uint)(heatColor.g * 255) << 8) | ((uint)(heatColor.r * 255) << 0);
+        uint heatMapColor = _heatColorLUT[index];
 
         renderer.SetShaderUserValue(heatMapColor);
 
