@@ -51,8 +51,8 @@ public class HeatMapUpdater : MonoBehaviour
     public void UpdateHeatColor(Heat heatComponent, bool forceUpdate)
     {
         MeshRenderer renderer = heatComponent.meshRenderer;
-        double lastHeat = heatComponent.heatBeforeVisualUpdate;
-        double heat = heatComponent.heatValue;
+        float lastHeat = heatComponent.heatBeforeVisualUpdate;
+        float heat = heatComponent.heatValue;
 
         if (renderer == null)
         {

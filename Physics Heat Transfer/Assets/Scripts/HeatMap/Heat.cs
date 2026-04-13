@@ -13,9 +13,6 @@ public class Heat : MonoBehaviour
     public int heatID = 0;
 
     [HideInInspector]
-    public double pendingDeltaTemperature = 0f;
-
-    [HideInInspector]
     public MaterialPropertyBlock propertyBlock;
     [HideInInspector]
     public MeshRenderer meshRenderer;
@@ -29,7 +26,14 @@ public class Heat : MonoBehaviour
 
     private float _absoluteZeroPoint = -273.15f;//in celsius
 
-    public double HeatP
+    private float _cellSize;
+    private float _cubeVolume;
+    private float _thermalConductivity;
+    private float _densityPerCubicCm;
+    private float _specificHeat;
+    private float _heatCapacity;
+
+    public float HeatP
     {
         get
         {
@@ -49,9 +53,9 @@ public class Heat : MonoBehaviour
         } 
     }
 
-    public double heatValue = 0f;
+    public float heatValue = 0f;
     [HideInInspector]
-    public double heatBeforeVisualUpdate = 0f;
+    public float heatBeforeVisualUpdate = 0f;
 
     [HideInInspector]
     public List<Heat> heatNeighbors = new List<Heat>();
@@ -65,6 +69,13 @@ public class Heat : MonoBehaviour
     {
         meshRenderer = transform.GetComponent<MeshRenderer>();
         propertyBlock = new MaterialPropertyBlock();
+
+        _cellSize = _heatGridData._cellSize;
+        _cubeVolume = _cellSize * _cellSize * _cellSize;
+        _thermalConductivity = chemicalMaterial.thermalConductivity;
+        _densityPerCubicCm = chemicalMaterial.densityPerCubicCm;
+        _specificHeat = chemicalMaterial.specificHeat;
+        _heatCapacity = (_densityPerCubicCm * _cubeVolume) * _specificHeat;
     }
 
     private void Start()
@@ -156,14 +167,14 @@ public class Heat : MonoBehaviour
     private void SimulateHeat()
     {
         Profiler.BeginSample("Heat simulation");
-        double totalDeltaTemperature = 0;
+        float totalDeltaTemperature = 0;
 
         int count = heatNeighbors.Count;
 
         for (int i = 0; i < count; i++)
         {
             Heat heat = heatNeighbors[i];
-            double deltaTemperature = CalculateDeltaTemperature(heat);
+            float deltaTemperature = CalculateDeltaTemperature(heat);
             ApplyTemperatureTo(heat, deltaTemperature);
             totalDeltaTemperature += deltaTemperature;
         }
@@ -172,23 +183,19 @@ public class Heat : MonoBehaviour
         Profiler.EndSample();
     }
 
-    public double CalculateDeltaTemperature(Heat neighbor)
+    public float CalculateDeltaTemperature(Heat neighbor)
     {
         Profiler.BeginSample("Change in temperature calculation");
-        double deltaTemperature = HeatP - neighbor.HeatP;
+        float deltaTemperature = HeatP - neighbor.HeatP;
 
-        double changeInTemperature = 0f;
+        float changeInTemperature = 0f;
 
-        double temperatureGradient = deltaTemperature / _heatGridData._cellSize;
+        float temperatureGradient = deltaTemperature / _cellSize;
 
-        double heatFlux = chemicalMaterial.thermalConductivity * temperatureGradient;
-
-        float volume = Mathf.Pow(_heatGridData._cellSize, 3);
+        float heatFlux = _thermalConductivity * temperatureGradient;
         // Waermestrom = Waermeleitfaehigkeit * Temperaturgradient
-        double heatCapacity = (chemicalMaterial.densityPerCubicCm * volume) * chemicalMaterial.specificHeat;
-        //m*c = (Masse * spezifische Waermekapazitaet)
 
-        changeInTemperature = (heatFlux * Time.deltaTime) / heatCapacity;
+        changeInTemperature = (heatFlux * Time.deltaTime) / _heatCapacity;
         // deltaTemperatur = Q/m*c
 
         Profiler.EndSample();
@@ -196,7 +203,7 @@ public class Heat : MonoBehaviour
         return changeInTemperature;
     }
 
-    private void ApplyTemperatureTo(Heat heatComponent, double deltaTemperature)
+    private void ApplyTemperatureTo(Heat heatComponent, float deltaTemperature)
     {
         heatComponent.HeatP += deltaTemperature;
         HeatMapUpdater.Instance.UpdateHeatColor(heatComponent, false);
