@@ -13,8 +13,6 @@ public class Heat : MonoBehaviour
     public int heatID = 0;
 
     [HideInInspector]
-    public MaterialPropertyBlock propertyBlock;
-    [HideInInspector]
     public MeshRenderer meshRenderer;
 
     [HideInInspector]
@@ -68,7 +66,6 @@ public class Heat : MonoBehaviour
     private void InitializeVariables()
     {
         meshRenderer = transform.GetComponent<MeshRenderer>();
-        propertyBlock = new MaterialPropertyBlock();
 
         _cellSize = _heatGridData._cellSize;
         _cubeVolume = _cellSize * _cellSize * _cellSize;

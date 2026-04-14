@@ -117,10 +117,7 @@ public class HeatMapUpdater : MonoBehaviour
             return;
         }
 
-        renderer.SetPropertyBlock(null);
         renderer.material = heatObjectComponent.chemicalMaterial.visualMaterial;
-
-        heatObjectComponent.propertyBlock = new MaterialPropertyBlock();
     }
 
     public void SetToHeatMapMaterial(Heat heatObjectComponent)
@@ -133,10 +130,7 @@ public class HeatMapUpdater : MonoBehaviour
             return;
         }
 
-        renderer.SetPropertyBlock(null);
         renderer.material = _heatMapMaterial;
-
-        heatObjectComponent.propertyBlock = new MaterialPropertyBlock();
 
         UpdateHeatColor(heatObjectComponent, true);
     }
