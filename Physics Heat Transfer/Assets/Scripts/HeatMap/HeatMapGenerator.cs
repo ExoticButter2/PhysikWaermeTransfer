@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using Unity.Collections;
+using Unity.Jobs;
 
 public class HeatMapGenerator : MonoBehaviour
 {
@@ -14,9 +16,7 @@ public class HeatMapGenerator : MonoBehaviour
     [HideInInspector]
     public List<GameObject> heatMapParents = new List<GameObject>();
     [HideInInspector]
-    public List<HeatGridData> heatGridDataList = new List<HeatGridData>();
-    [HideInInspector]
-    public Dictionary<int, Heat> heatIDToHeatComponent = new Dictionary<int, Heat>();
+    public List<HeatGridManager> heatGridDataList = new List<HeatGridManager>();
 
     [SerializedDictionary(keyName: "Material", valueName: "Prefab")]
     public SerializedDictionary<ChemicalMaterial, GameObject> chemicalMaterialPrefab = new SerializedDictionary<ChemicalMaterial, GameObject>();
@@ -52,6 +52,8 @@ public class HeatMapGenerator : MonoBehaviour
 
     public void InitializeHeatGrid(ChemicalMaterial material, Vector3 parentPosition)
     {
+        _idCounter = 0;
+
         GameObject materialParentObject = new GameObject();
 
         Rigidbody parentRigidbody = materialParentObject.AddComponent<Rigidbody>();
@@ -81,12 +83,11 @@ public class HeatMapGenerator : MonoBehaviour
                         continue;
                     }
 
-                    cubeHeatComponent.gridX = x;
-                    cubeHeatComponent.gridY = y;
-                    cubeHeatComponent.gridZ = z;
+                    cubeHeatComponent.GridX = x;
+                    cubeHeatComponent.GridY = y;
+                    cubeHeatComponent.GridZ = z;
 
-                    cubeHeatComponent.heatID = _idCounter;
-                    heatIDToHeatComponent.Add(cubeHeatComponent.heatID, cubeHeatComponent);
+                    cubeHeatComponent.HeatID = _idCounter;
 
                     cubeMaterial.layer = LayerMask.NameToLayer("HeatComponent");
 
@@ -102,20 +103,52 @@ public class HeatMapGenerator : MonoBehaviour
             }
         }
 
-        HeatGridData heatGridData = materialParentObject.AddComponent<HeatGridData>();
-        heatGridDataList.Add(heatGridData);
+        HeatGridManager HeatGridManager = materialParentObject.AddComponent<HeatGridManager>();
+        heatGridDataList.Add(HeatGridManager);
+        int totalSize = width * height * depth;
 
-        heatGridData.heatIDToHeatComponent = heatIDToHeatComponent;
-        heatGridData._heatGrid = _heatGrid;
-        heatGridData._cellSize = cellSize;
+        HeatGridManager.HeatGrid = _heatGrid;
+        HeatGridManager.CellSize = cellSize;
+        HeatGridManager.HeatGridWidth = width;
+        HeatGridManager.HeatGridHeight = height;
+        HeatGridManager.HeatGridDepth = depth;
+        HeatGridManager.TotalGridSize = totalSize;
 
-        foreach (Heat heatComponent in heatGridData._heatGrid)
+        HeatGridManager.GridTemperatures = new NativeArray<float>(totalSize, Allocator.Persistent);
+        HeatGridManager.PendingDeltaTemperatures = new NativeArray<float>(totalSize, Allocator.Persistent);
+        HeatGridManager.HeatDataArray = new NativeArray<HeatData>(totalSize, Allocator.Persistent);
+        HeatGridManager.NeighborDataArray = new NativeArray<NeighborData>(totalSize * 6, Allocator.Persistent);
+        HeatGridManager.ChemicalMaterial = material;
+        HeatGridManager.heatIDToHeatComponent = new Heat[totalSize];
+
+        foreach (Heat heatComponent in HeatGridManager.HeatGrid)
         {
-            heatComponent._heatGridData = heatGridData;
+            int heatID = heatComponent.HeatID;
+            HeatGridManager.HeatDataArray[heatID] = new HeatData(heatID);
+
+            HeatGridManager.HeatIDToHeatComponent[heatID] = heatComponent;
+
+            for (int i = 0; i < 6; i++)
+            {
+                int nx = heatComponent.GridX, ny = heatComponent.GridY, nz = heatComponent.GridZ;
+                if (i == 0) nx++; // right
+                else if (i == 1) nx--; // left
+                else if (i == 2) ny++; // up
+                else if (i == 3) ny--; // down
+                else if (i == 4) nz++; // front
+                else if (i == 5) nz--; // back
+
+                if (nx >= 0 && nx < width &&
+                    ny >= 0 && ny < height &&
+                    nz >= 0 && nz < depth)
+                {
+                    HeatGridManager.NeighborDataArray[heatID * 6 + i] = new NeighborData(nx * (height * depth) + ny * depth + nz);
+                }
+            }
         }
 
-        CollisionHandler parentCollisionHandler = materialParentObject.AddComponent<CollisionHandler>();
-        parentCollisionHandler.heatGridData = heatGridData;
+        //CollisionHandler parentCollisionHandler = materialParentObject.AddComponent<CollisionHandler>();
+        //parentCollisionHandler.HeatGridManager = heatGridData;
 
         parentRigidbody.isKinematic = false;
     }
@@ -128,7 +161,6 @@ public class HeatMapGenerator : MonoBehaviour
         }
         heatMapParents.Clear();
         heatGridDataList.Clear();
-        heatIDToHeatComponent.Clear();
         _idCounter = 0;
     }
 }

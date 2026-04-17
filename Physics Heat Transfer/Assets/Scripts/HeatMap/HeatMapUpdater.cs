@@ -11,11 +11,6 @@ public class HeatMapUpdater : MonoBehaviour
     [SerializeField]
     private HeatMap _heatMap;
 
-    private static readonly int _baseColorId = Shader.PropertyToID("_BaseColor");
-
-    [SerializeField]
-    private float _heatChangeNeededForVisual = 0.1f;
-
     [SerializeField]
     private Material _heatMapMaterial;
 
@@ -50,9 +45,8 @@ public class HeatMapUpdater : MonoBehaviour
 
     public void UpdateHeatColor(Heat heatComponent, bool forceUpdate)
     {
-        MeshRenderer renderer = heatComponent.meshRenderer;
-        float lastHeat = heatComponent.heatBeforeVisualUpdate;
-        float heat = heatComponent.heatValue;
+        MeshRenderer renderer = heatComponent.MeshRenderer;
+        float heat = heatComponent.HeatValue;
 
         if (renderer == null)
         {
@@ -60,12 +54,10 @@ public class HeatMapUpdater : MonoBehaviour
             return;
         }
 
-        if ((Mathf.Abs((float)heat - (float)lastHeat) <= _heatChangeNeededForVisual || !heatMapEnabled) && !forceUpdate)
+        if (!heatMapEnabled && !forceUpdate)
         {
             return;
         }
-
-        heatComponent.heatBeforeVisualUpdate = heat;
 
         Profiler.BeginSample("Heat color update");
 
@@ -86,9 +78,9 @@ public class HeatMapUpdater : MonoBehaviour
 
         if (mode)
         {
-            foreach (HeatGridData heatGridData in HeatMapGenerator.Instance.heatGridDataList)
+            foreach (HeatGridManager heatGridData in HeatMapGenerator.Instance.heatGridDataList)
             {
-                foreach (Heat heatComponent in heatGridData._heatGrid)
+                foreach (Heat heatComponent in heatGridData.HeatGrid)
                 {
                     SetToHeatMapMaterial(heatComponent);
                     UpdateHeatColor(heatComponent, true);
@@ -97,9 +89,9 @@ public class HeatMapUpdater : MonoBehaviour
         }
         else
         {
-            foreach (HeatGridData heatGridData in HeatMapGenerator.Instance.heatGridDataList)
+            foreach (HeatGridManager heatGridData in HeatMapGenerator.Instance.heatGridDataList)
             {
-                foreach (Heat heatComponent in heatGridData._heatGrid)
+                foreach (Heat heatComponent in heatGridData.HeatGrid)
                 {
                     SetToNormalMaterial(heatComponent);
                 }
@@ -117,7 +109,7 @@ public class HeatMapUpdater : MonoBehaviour
             return;
         }
 
-        renderer.material = heatObjectComponent.chemicalMaterial.visualMaterial;
+        renderer.material = heatObjectComponent.ChemicalMaterial.visualMaterial;
     }
 
     public void SetToHeatMapMaterial(Heat heatObjectComponent)

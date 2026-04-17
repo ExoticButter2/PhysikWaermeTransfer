@@ -93,8 +93,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 935fe683a67f3ba4a8052cb4891cde3b, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 4e26c53addbdbe24c9df89ed8394c85b, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -3528,7 +3528,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &330585546
@@ -5053,7 +5053,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1634044720}
   m_Direction: 0
   m_MinValue: 2
-  m_MaxValue: 25
+  m_MaxValue: 40
   m_WholeNumbers: 1
   m_Value: 2
   m_OnValueChanged:
@@ -9523,7 +9523,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1021380330}
   m_Direction: 0
   m_MinValue: 2
-  m_MaxValue: 25
+  m_MaxValue: 40
   m_WholeNumbers: 1
   m_Value: 2
   m_OnValueChanged:
@@ -10825,7 +10825,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 44.140896}
+  m_AnchoredPosition: {x: 0, y: 44.141026}
   m_SizeDelta: {x: 0, y: 331.4}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &986352251
@@ -12466,7 +12466,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HeatMapUpdater
   heatMapEnabled: 0
   _heatMap: {fileID: 11400000, guid: f8af3f8926768324991bd698785ede51, type: 2}
-  _heatChangeNeededForVisual: 0.01
   _heatMapMaterial: {fileID: 2100000, guid: 3261d06898377d24cba982a1ad37021a, type: 2}
   _lookUpTableSize: 2048
 --- !u!114 &1068347083
@@ -15442,7 +15441,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1918354238}
   m_Direction: 0
   m_MinValue: 2
-  m_MaxValue: 25
+  m_MaxValue: 40
   m_WholeNumbers: 1
   m_Value: 2
   m_OnValueChanged:
@@ -18752,7 +18751,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1752370793}
   m_HandleRect: {fileID: 1752370792}
   m_Direction: 2
-  m_Value: -0.000004912213
+  m_Value: -0.0000054580146
   m_Size: 0.6313407
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -19034,7 +19033,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 167.74077}
+  m_AnchoredPosition: {x: 0, y: 167.74097}
   m_SizeDelta: {x: 0, y: 455}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1706719579
@@ -21774,7 +21773,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!64 &1899629442
 MeshCollider:
