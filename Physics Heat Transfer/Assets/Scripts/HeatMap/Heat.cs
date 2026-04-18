@@ -1,16 +1,7 @@
-using NUnit.Framework;
-using Unity.VisualScripting;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
-using Unity.Profiling;
-using UnityEngine.Profiling;
-using System;
 using Unity.Jobs;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 public struct HeatData
 {
@@ -45,7 +36,7 @@ public struct CalculateDeltaTemperatureJob : IJobParallelFor
     public NativeArray<NeighborData> NeighborDataArray;
     [ReadOnly]
     public NativeArray<float> GridTemperatures;
-    [WriteOnly]
+
     public NativeArray<float> PendingDeltaTemperatures;
 
     public void Execute(int index)
@@ -68,11 +59,10 @@ public struct CalculateDeltaTemperatureJob : IJobParallelFor
             float changeInTemperature = (heatFlux * DeltaTime) / HeatCapacity;
             // deltaTemperatur = Q/m*c
 
-            //PendingDeltaTemperatures[index] += changeInTemperature;
             totalDeltaTemperature += changeInTemperature;
         }
 
-        PendingDeltaTemperatures[index] = totalDeltaTemperature;
+        PendingDeltaTemperatures[index] += totalDeltaTemperature;
     }
 }
 
