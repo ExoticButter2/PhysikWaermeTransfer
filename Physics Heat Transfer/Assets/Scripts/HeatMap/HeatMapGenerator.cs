@@ -127,6 +127,7 @@ public class HeatMapGenerator : MonoBehaviour
             HeatGridManager.HeatDataArray[heatID] = new HeatData(heatID);
 
             HeatGridManager.HeatIDToHeatComponent[heatID] = heatComponent;
+            heatComponent.heatGridManager = HeatGridManager;
 
             for (int i = 0; i < 6; i++)
             {

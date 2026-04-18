@@ -109,7 +109,7 @@ public class HeatMapUpdater : MonoBehaviour
             return;
         }
 
-        renderer.material = heatObjectComponent.ChemicalMaterial.visualMaterial;
+        renderer.material = heatObjectComponent.heatGridManager.ChemicalMaterial.visualMaterial;
     }
 
     public void SetToHeatMapMaterial(Heat heatObjectComponent)

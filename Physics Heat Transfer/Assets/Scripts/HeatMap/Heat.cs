@@ -87,6 +87,9 @@ public class Heat : MonoBehaviour
 
     private float _absoluteZeroPoint = -273.15f;//in celsius
 
+    [HideInInspector]
+    public HeatGridManager heatGridManager;
+
     public float HeatP
     {
         get
@@ -108,8 +111,6 @@ public class Heat : MonoBehaviour
     }
 
     public float HeatValue = 0f;
-
-    public ChemicalMaterial ChemicalMaterial;
 
     private void InitializeVariables()
     {
