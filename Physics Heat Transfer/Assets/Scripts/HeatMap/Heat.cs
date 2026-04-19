@@ -1,124 +1,114 @@
-using UnityEngine;
-using Unity.Jobs;
-using Unity.Burst;
-using Unity.Collections;
+//using UnityEngine;
+//using Unity.Jobs;
+//using Unity.Burst;
+//using Unity.Collections;
 
-public struct HeatData
-{
-    public HeatData(int heatID)
-    {
-        this.HeatID = heatID;
-    }
+//public struct NeighborData
+//{
+//    public NeighborData(int heatID)
+//    {
+//        this.HeatID = heatID;
+//    }
 
-    public int HeatID;
-}
+//    public int HeatID;
+//}
 
-public struct NeighborData
-{
-    public NeighborData(int heatID)
-    {
-        this.HeatID = heatID;
-    }
+//[BurstCompile]
+//public struct CalculateDeltaTemperatureJob : IJobParallelFor
+//{
+//    public float ThermalConductivity;
+//    public float CellSize;
+//    public float HeatCapacity;
 
-    public int HeatID;
-}
+//    public float DeltaTime;
 
-[BurstCompile]
-public struct CalculateDeltaTemperatureJob : IJobParallelFor
-{
-    public float ThermalConductivity;
-    public float CellSize;
-    public float HeatCapacity;
+//    [ReadOnly]
+//    public NativeArray<NeighborData> NeighborDataArray;
+//    [ReadOnly]
+//    public NativeArray<float> GridTemperatures;
 
-    public float DeltaTime;
+//    public NativeArray<float> PendingDeltaTemperatures;
 
-    [ReadOnly]
-    public NativeArray<NeighborData> NeighborDataArray;
-    [ReadOnly]
-    public NativeArray<float> GridTemperatures;
+//    public void Execute(int index)
+//    {
+//        float currentTemperature = GridTemperatures[index];
+//        float totalDeltaTemperature = 0f;
 
-    public NativeArray<float> PendingDeltaTemperatures;
+//        for (int i = 0; i < 6; i++)
+//        {
+//            NeighborData neighborData = NeighborDataArray[index * 6 + i];
 
-    public void Execute(int index)
-    {
-        float currentTemperature = GridTemperatures[index];
-        float totalDeltaTemperature = 0f;
+//            float neighborTemperature = GridTemperatures[neighborData.HeatID];
+//            float deltaTemperature = neighborTemperature - currentTemperature;
 
-        for (int i = 0; i < 6; i++)
-        {
-            NeighborData neighborData = NeighborDataArray[index * 6 + i];
+//            float temperatureGradient = deltaTemperature / CellSize;
 
-            float neighborTemperature = GridTemperatures[neighborData.HeatID];
-            float deltaTemperature = neighborTemperature - currentTemperature;
+//            float heatFlux = ThermalConductivity * temperatureGradient;
+//            // Waermestrom = Waermeleitfaehigkeit * Temperaturgradient
 
-            float temperatureGradient = deltaTemperature / CellSize;
+//            float changeInTemperature = (heatFlux * DeltaTime) / HeatCapacity;
+//            // deltaTemperatur = Q/m*c
 
-            float heatFlux = ThermalConductivity * temperatureGradient;
-            // Waermestrom = Waermeleitfaehigkeit * Temperaturgradient
+//            totalDeltaTemperature += changeInTemperature;
+//        }
 
-            float changeInTemperature = (heatFlux * DeltaTime) / HeatCapacity;
-            // deltaTemperatur = Q/m*c
+//        PendingDeltaTemperatures[index] += totalDeltaTemperature;
+//    }
+//}
 
-            totalDeltaTemperature += changeInTemperature;
-        }
+//[DefaultExecutionOrder(50)]
+//public class Heat : MonoBehaviour
+//{
+//    [HideInInspector]
+//    public HeatGridManager HeatGridManager;
 
-        PendingDeltaTemperatures[index] += totalDeltaTemperature;
-    }
-}
+//    [HideInInspector]
+//    public int HeatID = 0;
 
-[DefaultExecutionOrder(50)]
-public class Heat : MonoBehaviour
-{
-    [HideInInspector]
-    public HeatGridManager HeatGridManager;
+//    [HideInInspector]
+//    public MeshRenderer MeshRenderer;
 
-    [HideInInspector]
-    public int HeatID = 0;
+//    [HideInInspector]
+//    public int GridX = 0;
+//    [HideInInspector]
+//    public int GridY = 0;
+//    [HideInInspector]
+//    public int GridZ = 0;
 
-    [HideInInspector]
-    public MeshRenderer MeshRenderer;
+//    private float _absoluteZeroPoint = -273.15f;//in celsius
 
-    [HideInInspector]
-    public int GridX = 0;
-    [HideInInspector]
-    public int GridY = 0;
-    [HideInInspector]
-    public int GridZ = 0;
+//    [HideInInspector]
+//    public HeatGridManager heatGridManager;
 
-    private float _absoluteZeroPoint = -273.15f;//in celsius
-
-    [HideInInspector]
-    public HeatGridManager heatGridManager;
-
-    public float HeatP
-    {
-        get
-        {
-            return HeatValue;
-        }
+//    public float HeatP
+//    {
+//        get
+//        {
+//            return HeatValue;
+//        }
         
-        set
-        {
-            if (value < _absoluteZeroPoint)
-            {
-                HeatValue = _absoluteZeroPoint;
-            }
-            else
-            {
-                HeatValue = value;
-            }
-        } 
-    }
+//        set
+//        {
+//            if (value < _absoluteZeroPoint)
+//            {
+//                HeatValue = _absoluteZeroPoint;
+//            }
+//            else
+//            {
+//                HeatValue = value;
+//            }
+//        } 
+//    }
 
-    public float HeatValue = 0f;
+//    public float HeatValue = 0f;
 
-    private void InitializeVariables()
-    {
-        MeshRenderer = transform.GetComponent<MeshRenderer>();
-    }
+//    private void InitializeVariables()
+//    {
+//        MeshRenderer = transform.GetComponent<MeshRenderer>();
+//    }
 
-    private void Start()
-    {
-        InitializeVariables();
-    }
-}
+//    private void Start()
+//    {
+//        InitializeVariables();
+//    }
+//}

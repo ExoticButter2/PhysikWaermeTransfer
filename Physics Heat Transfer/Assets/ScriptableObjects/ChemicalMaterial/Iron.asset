@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6498f5772239e634e80ef25032ae3ee1, type: 3}
   m_Name: Iron
   m_EditorClassIdentifier: Assembly-CSharp::ChemicalMaterial
+  prefab: {fileID: 8624604431732359070, guid: 6f60bf538d92a6248947f302785ee62a, type: 3}
+  chemicalID: 0
   englishMaterialName: Iron
   germanMaterialName: Eisen
   thermalConductivity: 0.804

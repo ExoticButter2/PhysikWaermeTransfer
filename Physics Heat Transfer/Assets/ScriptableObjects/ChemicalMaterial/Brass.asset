@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6498f5772239e634e80ef25032ae3ee1, type: 3}
   m_Name: Brass
   m_EditorClassIdentifier: Assembly-CSharp::ChemicalMaterial
+  prefab: {fileID: 8234902179566538743, guid: b68efa364a0a6444eb9370eb1c8ef302, type: 3}
+  chemicalID: 1
   englishMaterialName: Brass
   germanMaterialName: Messing
   thermalConductivity: 1.4687

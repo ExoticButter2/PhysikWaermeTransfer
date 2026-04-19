@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9009128874604329562}
   - component: {fileID: 628991160848424583}
   - component: {fileID: 2207291377763169780}
-  - component: {fileID: -3748586524372835541}
+  - component: {fileID: 4990605721021050209}
   m_Layer: 0
   m_Name: Brass
   m_TagString: Untagged
@@ -113,7 +113,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-3748586524372835541
+--- !u!114 &4990605721021050209
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,16 +122,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8234902179566538743}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fbeb232ceede7d4cbab4fd4142b12ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 6fc3f83b04b9c9f45ab63ccb32c6337c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Heat
+  m_EditorClassIdentifier: Assembly-CSharp::HeatDataAuthoring
   heatID: 0
-  meshRenderer: {fileID: 0}
-  gridX: 0
-  gridY: 0
-  gridZ: 0
-  heatValue: 0
-  heatBeforeVisualUpdate: 0
-  heatNeighbors: []
-  chemicalMaterial: {fileID: 11400000, guid: c16f63623247a4942a5f2d7dadec3885, type: 2}
-  _heatGridData: {fileID: 0}
+  GridX: 0
+  GridY: 0
+  GridZ: 0
+  chemicalMaterialID: 0

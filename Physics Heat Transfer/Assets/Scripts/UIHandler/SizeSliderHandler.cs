@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +31,15 @@ public class SizeSliderHandler : MonoBehaviour
     {
         int newWidth = (int)value;
 
-        HeatMapGenerator.Instance.width = newWidth;
+        //HeatMapGenerator.Instance.width = newWidth;
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        Entity queryEntity = entityManager.CreateEntityQuery(typeof(GridData)).GetSingletonEntity();
+
+        GridData readGridData = entityManager.GetComponentData<GridData>(queryEntity);
+
+        readGridData.width = (int)value;
+
+        entityManager.SetComponentData(queryEntity, readGridData);
         _widthSliderTextLabel.text = $"Breite: {newWidth}";
     }
 
@@ -38,7 +47,16 @@ public class SizeSliderHandler : MonoBehaviour
     {
         int newHeight = (int)value;
 
-        HeatMapGenerator.Instance.height = newHeight;
+        //HeatMapGenerator.Instance.height = newHeight;
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        Entity queryEntity = entityManager.CreateEntityQuery(typeof(GridData)).GetSingletonEntity();
+
+        GridData readGridData = entityManager.GetComponentData<GridData>(queryEntity);
+
+        readGridData.height = (int)value;
+
+        entityManager.SetComponentData(queryEntity, readGridData);
+
         _heightSliderTextLabel.text = $"Höhe: {newHeight}";
     }
 
@@ -46,7 +64,16 @@ public class SizeSliderHandler : MonoBehaviour
     {
         int newDepth = (int)value;
 
-        HeatMapGenerator.Instance.depth = newDepth;
+        //HeatMapGenerator.Instance.depth = newDepth;
+        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        Entity queryEntity = entityManager.CreateEntityQuery(typeof(GridData)).GetSingletonEntity();
+
+        GridData readGridData = entityManager.GetComponentData<GridData>(queryEntity);
+
+        readGridData.depth = (int)value;
+
+        entityManager.SetComponentData(queryEntity, readGridData);
+
         _depthSliderTextLabel.text = $"Tiefe: {newDepth}";
     }
 }

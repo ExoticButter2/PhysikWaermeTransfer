@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7504238191323052112}
   - component: {fileID: 7273076489149379611}
   - component: {fileID: 348596231226685150}
-  - component: {fileID: 8518785902099886343}
+  - component: {fileID: 8031936284132250316}
   m_Layer: 0
   m_Name: Copper
   m_TagString: Untagged
@@ -113,7 +113,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8518785902099886343
+--- !u!114 &8031936284132250316
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,16 +122,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1402681014444498152}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fbeb232ceede7d4cbab4fd4142b12ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 6fc3f83b04b9c9f45ab63ccb32c6337c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Heat
+  m_EditorClassIdentifier: Assembly-CSharp::HeatDataAuthoring
   heatID: 0
-  meshRenderer: {fileID: 0}
-  gridX: 0
-  gridY: 0
-  gridZ: 0
-  heatValue: 0
-  heatBeforeVisualUpdate: 0
-  heatNeighbors: []
-  chemicalMaterial: {fileID: 11400000, guid: 3ec1f8cf632f60145be6b6bcb8ff8d02, type: 2}
-  _heatGridData: {fileID: 0}
+  GridX: 0
+  GridY: 0
+  GridZ: 0
+  chemicalMaterialID: 1

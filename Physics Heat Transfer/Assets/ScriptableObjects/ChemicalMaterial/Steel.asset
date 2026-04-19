@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6498f5772239e634e80ef25032ae3ee1, type: 3}
   m_Name: Steel
   m_EditorClassIdentifier: Assembly-CSharp::ChemicalMaterial
+  prefab: {fileID: 652688960734084980, guid: d815c1aa898b1f542a733b03e3a1504a, type: 3}
+  chemicalID: 3
   englishMaterialName: Steel
   germanMaterialName: Stahl
   thermalConductivity: 0.25

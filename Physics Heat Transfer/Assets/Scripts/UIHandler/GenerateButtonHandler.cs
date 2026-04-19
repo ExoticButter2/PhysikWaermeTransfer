@@ -1,4 +1,11 @@
+using Unity.Entities;
 using UnityEngine;
+using Unity.Mathematics;
+
+public struct GenerateGridRequest : IComponentData
+{
+    public float3 gridParentPosition;
+}
 
 public class GenerateButtonHandler : MonoBehaviour
 {
@@ -13,6 +20,14 @@ public class GenerateButtonHandler : MonoBehaviour
 
         Vector3 heatGridParentPosition = _cameraTransform.position + _cameraTransform.forward * distanceFromCameraToHeatGrid;
 
-        HeatMapGenerator.Instance.InitializeHeatGrid(MaterialPresetSelector.Instance.selectedMaterialPreset, heatGridParentPosition);
+        World entityManagerWorld = World.DefaultGameObjectInjectionWorld;
+
+        if (entityManagerWorld == null)
+            return;
+
+        EntityManager entityManager = entityManagerWorld.EntityManager;
+
+        Entity requestEntity = entityManager.CreateEntity();
+        entityManager.AddComponentData(requestEntity, new GenerateGridRequest { gridParentPosition = (float3)heatGridParentPosition });
     }
 }
