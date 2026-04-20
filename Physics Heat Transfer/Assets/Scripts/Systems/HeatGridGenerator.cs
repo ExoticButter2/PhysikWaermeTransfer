@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections;
 using System.Collections.Generic;
+using Unity.Jobs;
 
 public struct HeatGridParentData : IComponentData
 {
@@ -16,8 +17,8 @@ public partial struct HeatGridGenerator : ISystem
 {
     private BufferLookup<ChemicalMaterialRuntimeData> _materialBufferLookup;
     private EntityQuery _gridDataQuery;
-    public NativeHashMap<int, GridData> GridIDToGridDataHashmap;
-    public NativeHashMap<int4, HeatData> CoordinateIDToHeatDataHashmap;
+    public NativeParallelHashMap<int, GridData> GridIDToGridDataHashmap;
+    public NativeParallelHashMap<int4, HeatData> CoordinateIDToHeatDataHashmap;
 
     public int Id;
     public int GridId;
@@ -32,9 +33,9 @@ public partial struct HeatGridGenerator : ISystem
         _materialBufferLookup = state.GetBufferLookup<ChemicalMaterialRuntimeData>();
         _gridDataQuery = state.GetEntityQuery(typeof(GridData));
 
-        CoordinateIDToHeatDataHashmap = new NativeHashMap<int4, HeatData>(1024, Allocator.Persistent);
+        CoordinateIDToHeatDataHashmap = new NativeParallelHashMap<int4, HeatData>(1024, Allocator.Persistent);
 
-        GridIDToGridDataHashmap = new NativeHashMap<int, GridData>(64, Allocator.Persistent);
+        GridIDToGridDataHashmap = new NativeParallelHashMap<int, GridData>(64, Allocator.Persistent);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -92,7 +93,8 @@ public partial struct HeatGridGenerator : ISystem
     [BurstCompile]
     private void SpawnGrid(GridData gridData, Entity parentEntity, Entity heatVoxelPrefabEntity, EntityCommandBuffer ecb, ref SystemState state)
     {
-        GridIDToGridDataHashmap.Add(GridId, gridData);
+        state.Dependency = JobHandle.CombineDependencies(state.Dependency, default);
+        GridIDToGridDataHashmap.TryAdd(GridId, gridData);
 
         for (int x = 0; x < gridData.width; x++)
         {

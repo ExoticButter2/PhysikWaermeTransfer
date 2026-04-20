@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -23,24 +24,31 @@ public partial struct HeatGridCalculator : ISystem
 
         HeatGridGenerator heatGridGeneratorSystem = state.WorldUnmanaged.GetUnsafeSystemRef<HeatGridGenerator>(heatGridGeneratorHandle);
 
+        state.Dependency.Complete();
+
         ComponentLookup<HeatShaderValues> heatShaderValuesFromEntity = SystemAPI.GetComponentLookup<HeatShaderValues>(false);
 
-        foreach (var data in SystemAPI.Query<RefRO<HeatData>>())
-        {
-            heatGridGeneratorSystem.CoordinateIDToHeatDataHashmap[data.ValueRO.XYZWithGridID] = data.ValueRO;
-        }
+        NativeParallelHashMap<int4, HeatData> coordinateIDToHeatDataHashmap = heatGridGeneratorSystem.CoordinateIDToHeatDataHashmap;
+        NativeParallelHashMap<int, GridData> gridIDToGridDataHashmap = heatGridGeneratorSystem.GridIDToGridDataHashmap;
 
-        NativeHashMap<int, GridData> gridIdToGridDataHashmap = heatGridGeneratorSystem.GridIDToGridDataHashmap;
+        coordinateIDToHeatDataHashmap.Clear();
+
+        UpdateHashMapJob updateHashMapJob = new UpdateHashMapJob
+        {
+            HashMap = coordinateIDToHeatDataHashmap.AsParallelWriter()
+        };
+
+        JobHandle updateHashMapJobHandle = updateHashMapJob.ScheduleParallel(state.Dependency);
 
         CalculateTemperatureJob calculateTemperatureJob = new CalculateTemperatureJob
         {
             DeltaTemperatures = deltaTemperaturesArray,
             DeltaTime = SystemAPI.Time.DeltaTime,
-            GridIdToGridDataHashmap = gridIdToGridDataHashmap,
-            GridEntryMap = heatGridGeneratorSystem.CoordinateIDToHeatDataHashmap
+            GridIdToGridDataHashmap = gridIDToGridDataHashmap,
+            GridEntryMap = coordinateIDToHeatDataHashmap
         };
 
-        JobHandle calculationHandle = calculateTemperatureJob.ScheduleParallel(state.Dependency);
+        JobHandle calculationHandle = calculateTemperatureJob.ScheduleParallel(updateHashMapJobHandle);
         calculationHandle.Complete();
 
         ApplyTemperatureJob applyTemperatureJob = new ApplyTemperatureJob
@@ -57,11 +65,22 @@ public partial struct HeatGridCalculator : ISystem
     }
 }
 
-//[BurstCompile]
+[BurstCompile]
+public partial struct UpdateHashMapJob : IJobEntity
+{
+    public NativeParallelHashMap<int4, HeatData>.ParallelWriter HashMap;
+
+    public void Execute(in HeatData data)
+    {
+        HashMap.TryAdd(data.XYZWithGridID, data);
+    }
+}
+
+[BurstCompile]
 public partial struct CalculateTemperatureJob : IJobEntity
 {
-    [ReadOnly] public NativeHashMap<int4, HeatData> GridEntryMap;
-    [ReadOnly] public NativeHashMap<int, GridData> GridIdToGridDataHashmap;
+    [ReadOnly] public NativeParallelHashMap<int4, HeatData> GridEntryMap;
+    [ReadOnly] public NativeParallelHashMap<int, GridData> GridIdToGridDataHashmap;
     public float DeltaTime;
 
     [NativeDisableParallelForRestriction]
@@ -80,7 +99,8 @@ public partial struct CalculateTemperatureJob : IJobEntity
     [BurstCompile]
     public void Execute(in HeatData data)
     {
-        GridData gridData = GridIdToGridDataHashmap[data.XYZWithGridID.w];
+        if (!GridIdToGridDataHashmap.TryGetValue(data.XYZWithGridID.w, out GridData gridData))
+            return;
 
         float currentTemperature = data.temperature;
         float totalDeltaTemperature = 0f;
@@ -116,7 +136,7 @@ public partial struct CalculateTemperatureJob : IJobEntity
     }
 }
 
-//[BurstCompile]
+[BurstCompile]
 public partial struct ApplyTemperatureJob : IJobEntity
 {
     [ReadOnly] public NativeArray<float> TemperaturesToApply;
