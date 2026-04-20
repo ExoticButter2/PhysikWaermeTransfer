@@ -1,12 +1,14 @@
-using JetBrains.Annotations;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Collections;
+using System.Collections.Generic;
 
 public struct HeatGridParentData : IComponentData
 {
     public GridData gridData;
+    public int gridID;
 }
 
 [BurstCompile]
@@ -14,17 +16,29 @@ public partial struct HeatGridGenerator : ISystem
 {
     private BufferLookup<ChemicalMaterialRuntimeData> _materialBufferLookup;
     private EntityQuery _gridDataQuery;
+    public NativeHashMap<int, GridData> GridIDToGridDataHashmap;
+    public NativeHashMap<int4, HeatData> CoordinateIDToHeatDataHashmap;
+
+    public int Id;
+    public int GridId;
 
     public void OnCreate(ref SystemState state)
     {
+        EntityManager entityManager = state.World.EntityManager;
+
+        Id = 0;
+        GridId = 0;
+
         _materialBufferLookup = state.GetBufferLookup<ChemicalMaterialRuntimeData>();
         _gridDataQuery = state.GetEntityQuery(typeof(GridData));
+
+        CoordinateIDToHeatDataHashmap = new NativeHashMap<int4, HeatData>(1024, Allocator.Persistent);
+
+        GridIDToGridDataHashmap = new NativeHashMap<int, GridData>(64, Allocator.Persistent);
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        
-
         if (!SystemAPI.TryGetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>(out var ecbSingleton))
             return;
 
@@ -53,6 +67,8 @@ public partial struct HeatGridGenerator : ISystem
 
         ChemicalMaterialBlobItem chemicalMaterial = gridData.chemicalMaterial;
 
+        gridData.cellSize = 1;
+
         foreach (var (request, entity) in SystemAPI.Query<GenerateGridRequest>().WithEntityAccess())
         {
             Entity parentEntity = SpawnGridParent(request.gridParentPosition, ecb, gridData);
@@ -66,7 +82,7 @@ public partial struct HeatGridGenerator : ISystem
     private Entity SpawnGridParent(float3 position, EntityCommandBuffer ecb, GridData gridData)
     {
         Entity parentEntity = ecb.CreateEntity();
-        ecb.AddComponent(parentEntity, new HeatGridParentData { gridData = gridData });
+        ecb.AddComponent(parentEntity, new HeatGridParentData { gridData = gridData, gridID = GridId });
         ecb.AddComponent(parentEntity, LocalTransform.FromPosition(position));
         ecb.AddComponent<LocalToWorld>(parentEntity);
 
@@ -76,7 +92,7 @@ public partial struct HeatGridGenerator : ISystem
     [BurstCompile]
     private void SpawnGrid(GridData gridData, Entity parentEntity, Entity heatVoxelPrefabEntity, EntityCommandBuffer ecb, ref SystemState state)
     {
-        int id = 0;
+        GridIDToGridDataHashmap.Add(GridId, gridData);
 
         for (int x = 0; x < gridData.width; x++)
         {
@@ -84,30 +100,37 @@ public partial struct HeatGridGenerator : ISystem
             {
                 for (int z = 0; z < gridData.width; z++)
                 {
-                    SpawnHeatVoxel(new float3(x, y, z), heatVoxelPrefabEntity, parentEntity, gridData, id, ecb, ref state);
-                    id++;
+                    SpawnHeatVoxel(new float3(x, y, z), heatVoxelPrefabEntity, parentEntity, gridData, ecb, ref state);
+                    Id++;
                 }
             }
         }
+        GridId++;
     }
 
     [BurstCompile]
-    private void SpawnHeatVoxel(float3 localPosition, Entity entityToSpawn, Entity gridParentEntity, GridData gridData, int id, EntityCommandBuffer ecb, ref SystemState state)
+    private void SpawnHeatVoxel(float3 localPosition, Entity entityToSpawn, Entity gridParentEntity, GridData gridData, EntityCommandBuffer ecb, ref SystemState state)
     {
         Entity spawnedEntity = ecb.Instantiate(entityToSpawn);
 
         ecb.RemoveComponent<SceneTag>(spawnedEntity);
         ecb.AddComponent(spawnedEntity, new Parent { Value = gridParentEntity });
         ecb.SetComponent(spawnedEntity, LocalTransform.FromPosition(localPosition));
+        ecb.AddComponent(spawnedEntity, new HeatShaderValues { value = 0 });
 
-        ecb.SetComponent(spawnedEntity, new HeatData
+        int4 heatVoxelCoordinate = new int4((int)localPosition.x, (int)localPosition.y, (int)localPosition.z, GridId);
+
+        HeatData heatData = new HeatData
         {
             chemicalMaterialID = gridData.chemicalMaterial.id,
-            GridX = localPosition.x,
-            GridY = localPosition.y,
-            GridZ = localPosition.z,
-            heatID = id
-        });
+            XYZWithGridID = heatVoxelCoordinate,
+            temperature = 0f,
+            ID = Id
+        };
+
+        ecb.SetComponent(spawnedEntity, heatData);
+
+        CoordinateIDToHeatDataHashmap.Add(heatVoxelCoordinate, heatData);
 
         Entity gridDataEntity = _gridDataQuery.GetSingletonEntity();
         _materialBufferLookup.Update(ref state);
@@ -124,7 +147,20 @@ public partial struct HeatGridGenerator : ISystem
                 continue;
 
             Entity requestEntity = ecb.CreateEntity();
-            ecb.AddComponent(spawnedEntity, new HeatMapUpdateRequest { materialID = bufferData.visualBatchMaterialID, defaultHeatMapMaterialID = bufferData.heatMapBatchMaterialID });
+            //ecb.AddComponent(spawnedEntity, new HeatMapUpdateRequest { materialID = bufferData.visualBatchMaterialID, defaultHeatMapMaterialID = bufferData.heatMapBatchMaterialID });
+        }
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+        if (CoordinateIDToHeatDataHashmap.IsCreated)
+        {
+            CoordinateIDToHeatDataHashmap.Dispose();
+        }
+
+        if (GridIDToGridDataHashmap.IsCreated)
+        {
+            GridIDToGridDataHashmap.Dispose();
         }
     }
 }

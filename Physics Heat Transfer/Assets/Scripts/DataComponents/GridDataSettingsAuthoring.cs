@@ -11,6 +11,8 @@ public class GridDataSettingsAuthoring : MonoBehaviour
     public int defaultDepth;
     public bool heatMapEnabled;
 
+    public int cellSize;
+
     public List<ChemicalMaterial> chemicalMaterials;
     public Material heatMapMaterial;
 }
@@ -21,6 +23,9 @@ public struct GridData : IComponentData
     public int height;
     public int depth;
     public bool heatMapEnabled;
+
+    public int cellSize;
+
     public ChemicalMaterialBlobItem chemicalMaterial;
     public ChemicalMaterialPrefabElement chemicalMaterialPrefabElement;
 }
@@ -40,7 +45,7 @@ public class GridDataSettingsBaker : Baker<GridDataSettingsAuthoring>
     public override void Bake(GridDataSettingsAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.None);
-        AddComponent(entity, new GridData { width = authoring.defaultWidth, height = authoring.defaultHeight, depth = authoring.defaultDepth, heatMapEnabled = authoring.heatMapEnabled });
+        AddComponent(entity, new GridData { width = authoring.defaultWidth, height = authoring.defaultHeight, depth = authoring.defaultDepth, heatMapEnabled = authoring.heatMapEnabled, cellSize = authoring.cellSize });
 
         var buffer = AddBuffer<ChemicalMaterialPrefabElement>(entity);
         var materialBuffer = AddBuffer<ChemicalMaterialRuntimeData>(entity);

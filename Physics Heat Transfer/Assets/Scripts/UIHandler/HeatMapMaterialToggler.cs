@@ -11,5 +11,7 @@ public class HeatMapMaterialToggler : MonoBehaviour
         GridData gridDataComponent = entityManager.GetComponentData<GridData>(heatGridEntity);
 
         gridDataComponent.heatMapEnabled = state;
+
+        entityManager.SetComponentData(heatGridEntity, gridDataComponent);
     }
 }

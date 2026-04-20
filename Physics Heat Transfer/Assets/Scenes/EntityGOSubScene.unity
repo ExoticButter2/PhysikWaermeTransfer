@@ -152,6 +152,7 @@ MonoBehaviour:
   defaultHeight: 2
   defaultDepth: 2
   heatMapEnabled: 0
+  cellSize: 0
   chemicalMaterials:
   - {fileID: 11400000, guid: c16f63623247a4942a5f2d7dadec3885, type: 2}
   - {fileID: 11400000, guid: 3ec1f8cf632f60145be6b6bcb8ff8d02, type: 2}
