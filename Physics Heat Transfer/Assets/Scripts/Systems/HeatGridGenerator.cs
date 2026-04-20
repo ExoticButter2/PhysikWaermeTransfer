@@ -17,8 +17,8 @@ public partial struct HeatGridGenerator : ISystem
 {
     private BufferLookup<ChemicalMaterialRuntimeData> _materialBufferLookup;
     private EntityQuery _gridDataQuery;
-    public NativeArray<GridData> GridIDToGridDataHashmap;
-    public NativeArray<HeatData> CoordinateIDToHeatDataHashmap;
+    public NativeParallelHashMap<int, GridData> GridIDToGridDataHashmap;
+    public NativeParallelHashMap<int4, HeatData> CoordinateIDToHeatDataHashmap;
 
     public int Id;
     public int GridId;

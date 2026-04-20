@@ -25,10 +25,6 @@ public partial struct HeatGridCalculator : ISystem
 
         HeatGridGenerator heatGridGeneratorSystem = state.WorldUnmanaged.GetUnsafeSystemRef<HeatGridGenerator>(heatGridGeneratorHandle);
 
-        state.Dependency.Complete();
-
-        ComponentLookup<HeatShaderValues> heatShaderValuesFromEntity = SystemAPI.GetComponentLookup<HeatShaderValues>(false);
-
         NativeParallelHashMap<int4, HeatData> coordinateIDToHeatDataHashmap = heatGridGeneratorSystem.CoordinateIDToHeatDataHashmap;
         NativeParallelHashMap<int, GridData> gridIDToGridDataHashmap = heatGridGeneratorSystem.GridIDToGridDataHashmap;
 
@@ -53,7 +49,6 @@ public partial struct HeatGridCalculator : ISystem
         ApplyTemperatureJob applyTemperatureJob = new ApplyTemperatureJob
         {
             TemperaturesToApply = deltaTemperaturesArray,
-            HeatShaderValuesFromEntity = heatShaderValuesFromEntity
         };
 
         state.Dependency = applyTemperatureJob.ScheduleParallel(state.Dependency);
@@ -84,7 +79,6 @@ public partial struct CalculateTemperatureJob : IJobEntity
         new int4(0, 0, -1, 0)
     };
 
-    [BurstCompile]
     public void Execute(in HeatData data)
     {
         if (!GridIdToGridDataHashmap.TryGetValue(data.XYZWithGridID.w, out GridData gridData))
@@ -129,17 +123,10 @@ public partial struct ApplyTemperatureJob : IJobEntity
 {
     [ReadOnly] public NativeArray<float> TemperaturesToApply;
 
-    [NativeDisableParallelForRestriction]
-    public ComponentLookup<HeatShaderValues> HeatShaderValuesFromEntity;
-
-    public void Execute(ref HeatData data, Entity entity)
+    public void Execute(ref HeatData data, ref HeatShaderValues heatShaderValue)
     {
         data.temperature += TemperaturesToApply[data.ID];
-
-        HeatShaderValues heatShaderValue = HeatShaderValuesFromEntity[entity];
-
+        
         heatShaderValue.value = data.temperature;
-
-        HeatShaderValuesFromEntity[entity] = heatShaderValue;
     }
 }
