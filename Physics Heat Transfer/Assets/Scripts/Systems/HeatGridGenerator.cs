@@ -1,10 +1,10 @@
+using System.Collections.Generic;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Unity.Collections;
-using System.Collections.Generic;
-using Unity.Jobs;
 
 public struct HeatGridParentData : IComponentData
 {
@@ -17,8 +17,8 @@ public partial struct HeatGridGenerator : ISystem
 {
     private BufferLookup<ChemicalMaterialRuntimeData> _materialBufferLookup;
     private EntityQuery _gridDataQuery;
-    public NativeParallelHashMap<int, GridData> GridIDToGridDataHashmap;
-    public NativeParallelHashMap<int4, HeatData> CoordinateIDToHeatDataHashmap;
+    public NativeArray<GridData> GridIDToGridDataHashmap;
+    public NativeArray<HeatData> CoordinateIDToHeatDataHashmap;
 
     public int Id;
     public int GridId;
@@ -35,7 +35,7 @@ public partial struct HeatGridGenerator : ISystem
 
         CoordinateIDToHeatDataHashmap = new NativeParallelHashMap<int4, HeatData>(1024, Allocator.Persistent);
 
-        GridIDToGridDataHashmap = new NativeParallelHashMap<int, GridData>(64, Allocator.Persistent);
+        GridIDToGridDataHashmap = new NativeParallelHashMap<int, GridData>(2048, Allocator.Persistent);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -93,8 +93,21 @@ public partial struct HeatGridGenerator : ISystem
     [BurstCompile]
     private void SpawnGrid(GridData gridData, Entity parentEntity, Entity heatVoxelPrefabEntity, EntityCommandBuffer ecb, ref SystemState state)
     {
-        state.Dependency = JobHandle.CombineDependencies(state.Dependency, default);
+        state.Dependency.Complete();
+
+        int gridDataHashmapSize = GridIDToGridDataHashmap.Count() + 1;
+
+        if (gridDataHashmapSize > GridIDToGridDataHashmap.Capacity)
+        {
+            GridIDToGridDataHashmap.Capacity = gridDataHashmapSize;
+        }
+
+        //GridIDToGridDataHashmap.Clear();
         GridIDToGridDataHashmap.TryAdd(GridId, gridData);
+        //UpdateHashmapGridData updateHashmapGridDataJob = new UpdateHashmapGridData { parallelWriterGridHashmap = GridIDToGridDataHashmap.AsParallelWriter() };
+        //state.Dependency = updateHashmapGridDataJob.ScheduleParallel(state.Dependency);
+
+        state.Dependency.Complete();
 
         for (int x = 0; x < gridData.width; x++)
         {
@@ -108,6 +121,19 @@ public partial struct HeatGridGenerator : ISystem
             }
         }
         GridId++;
+
+        int heatDataHashmapSize = CoordinateIDToHeatDataHashmap.Count() + (gridData.width * gridData.height * gridData.depth);
+
+        if (heatDataHashmapSize > CoordinateIDToHeatDataHashmap.Capacity)
+        {
+            CoordinateIDToHeatDataHashmap.Capacity = heatDataHashmapSize;
+        }
+
+        state.Dependency.Complete();
+        CoordinateIDToHeatDataHashmap.Clear();
+
+        UpdateHashmapHeatData updateHashmapHeatDataJob = new UpdateHashmapHeatData { parallelWriterHeatHashmap = CoordinateIDToHeatDataHashmap.AsParallelWriter() };
+        state.Dependency = updateHashmapHeatDataJob.ScheduleParallel(state.Dependency);
     }
 
     [BurstCompile]
@@ -132,8 +158,6 @@ public partial struct HeatGridGenerator : ISystem
 
         ecb.SetComponent(spawnedEntity, heatData);
 
-        CoordinateIDToHeatDataHashmap.Add(heatVoxelCoordinate, heatData);
-
         Entity gridDataEntity = _gridDataQuery.GetSingletonEntity();
         _materialBufferLookup.Update(ref state);
 
@@ -148,7 +172,7 @@ public partial struct HeatGridGenerator : ISystem
             if (bufferData.chemicalMaterialID != gridData.chemicalMaterial.id)
                 continue;
 
-            Entity requestEntity = ecb.CreateEntity();
+            //Entity requestEntity = ecb.CreateEntity();
             //ecb.AddComponent(spawnedEntity, new HeatMapUpdateRequest { materialID = bufferData.visualBatchMaterialID, defaultHeatMapMaterialID = bufferData.heatMapBatchMaterialID });
         }
     }
@@ -164,5 +188,16 @@ public partial struct HeatGridGenerator : ISystem
         {
             GridIDToGridDataHashmap.Dispose();
         }
+    }
+}
+
+[BurstCompile]
+public partial struct UpdateHashmapHeatData : IJobEntity
+{
+    public NativeParallelHashMap<int4, HeatData>.ParallelWriter parallelWriterHeatHashmap;
+
+    public void Execute(in HeatData data)
+    {
+        parallelWriterHeatHashmap.TryAdd(data.XYZWithGridID, data);
     }
 }

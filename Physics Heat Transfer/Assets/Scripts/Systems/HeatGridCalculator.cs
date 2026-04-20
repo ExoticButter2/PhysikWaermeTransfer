@@ -11,7 +11,8 @@ public partial struct HeatGridCalculator : ISystem
     public void OnUpdate(ref SystemState state)
     {
         var query = SystemAPI.QueryBuilder().WithAll<HeatData>().Build();
-        query.CompleteDependency();
+
+        state.Dependency = JobHandle.CombineDependencies(state.Dependency, query.GetDependency());
 
         int heatDataEntityCount = query.CalculateEntityCount();
 
@@ -33,12 +34,11 @@ public partial struct HeatGridCalculator : ISystem
 
         coordinateIDToHeatDataHashmap.Clear();
 
-        UpdateHashMapJob updateHashMapJob = new UpdateHashMapJob
+        UpdateHashmapHeatData updateHashMapJob = new UpdateHashmapHeatData
         {
-            HashMap = coordinateIDToHeatDataHashmap.AsParallelWriter()
+            parallelWriterHeatHashmap = coordinateIDToHeatDataHashmap.AsParallelWriter()
         };
-
-        JobHandle updateHashMapJobHandle = updateHashMapJob.ScheduleParallel(state.Dependency);
+        state.Dependency = updateHashMapJob.ScheduleParallel(state.Dependency);
 
         CalculateTemperatureJob calculateTemperatureJob = new CalculateTemperatureJob
         {
@@ -48,8 +48,7 @@ public partial struct HeatGridCalculator : ISystem
             GridEntryMap = coordinateIDToHeatDataHashmap
         };
 
-        JobHandle calculationHandle = calculateTemperatureJob.ScheduleParallel(updateHashMapJobHandle);
-        calculationHandle.Complete();
+        state.Dependency = calculateTemperatureJob.ScheduleParallel(state.Dependency);
 
         ApplyTemperatureJob applyTemperatureJob = new ApplyTemperatureJob
         {
@@ -57,22 +56,11 @@ public partial struct HeatGridCalculator : ISystem
             HeatShaderValuesFromEntity = heatShaderValuesFromEntity
         };
 
-        JobHandle applyHandle = applyTemperatureJob.ScheduleParallel(calculationHandle);
+        state.Dependency = applyTemperatureJob.ScheduleParallel(state.Dependency);
 
-        state.Dependency = applyHandle;
+        generatorState.Dependency = state.Dependency;
 
         deltaTemperaturesArray.Dispose(state.Dependency);
-    }
-}
-
-[BurstCompile]
-public partial struct UpdateHashMapJob : IJobEntity
-{
-    public NativeParallelHashMap<int4, HeatData>.ParallelWriter HashMap;
-
-    public void Execute(in HeatData data)
-    {
-        HashMap.TryAdd(data.XYZWithGridID, data);
     }
 }
 
