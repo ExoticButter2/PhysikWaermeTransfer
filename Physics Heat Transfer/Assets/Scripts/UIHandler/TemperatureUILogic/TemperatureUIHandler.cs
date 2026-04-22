@@ -1,100 +1,89 @@
-//using System;
-//using TMPro;
-//using UnityEngine;
-//using UnityEngine.InputSystem;
+using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
-//public class TemperatureUIHandler : MonoBehaviour
-//{
-//    public static TemperatureUIHandler Instance;
+public class TemperatureUIHandler : MonoBehaviour
+{
+    public static TemperatureUIHandler Instance;
+    private TemperatureUnitSelector _unitSelectorInstance;
 
-//    [SerializeField]
-//    private TextMeshProUGUI _heatTextLabel;
+    [SerializeField]
+    private TextMeshProUGUI _heatTextLabel;
 
-//    public TextMeshProUGUI unitTextLabel;
+    [SerializeField]
+    private float _xOffset = 0f;
+    [SerializeField]
+    private float _yOffset = 0f;
 
-//    [SerializeField]
-//    private Canvas _heatUICanvas;
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
-//    [SerializeField]
-//    private float _xOffset = 0f;
-//    [SerializeField]
-//    private float _yOffset = 0f;
+    private void Start()
+    {
+        _unitSelectorInstance = TemperatureUnitSelector.Instance;
+    }
 
-//    private void Awake()
-//    {
-//        if (Instance == null)
-//        {
-//            Instance = this;
-//        }
-//        else
-//        {
-//            Destroy(gameObject);
-//        }
-//    }
+    private void Update()
+    {
+        UpdateHeatTextLabelPosition();
+    }
 
-//    private void Update()
-//    {
-//        UpdateHeatTextLabelPosition();
-//    }
+    private void EnableHeatUI()
+    {
+        _heatTextLabel.enabled = true;
+    }
 
-//    public enum TemperatureUnit
-//    {
-//        Celsius,
-//        Kelvin,
-//        Fahrenheit
-//    }
+    private void DisableHeatUI()
+    {
+        _heatTextLabel.enabled = false;
+    }
 
-//    [HideInInspector]
-//    public TemperatureUnit selectedTemperatureUnit = TemperatureUnit.Celsius;
+    private void UpdateHeatUI(float heat)
+    {
+        EnableHeatUI();
 
-//    private void EnableHeatUI()
-//    {
-//        _heatUICanvas.enabled = true;
-//    }
+        switch (_unitSelectorInstance.selectedTemperatureUnit)
+        {
+            case TemperatureUnit.Celsius:
+                _heatTextLabel.text = $"{Math.Round(heat - 273.15f, 2)}°C";
+                break;
 
-//    private void DisableHeatUI()
-//    {
-//        _heatUICanvas.enabled = false;
-//    }
+            case TemperatureUnit.Kelvin:
+                _heatTextLabel.text = $"{Math.Round(heat, 2)}K";
+                break;
 
-//    private void UpdateHeatUI(float heat)
-//    {
-//        switch (selectedTemperatureUnit)
-//        {
-//            case TemperatureUnit.Celsius:
-//                _heatTextLabel.text = $"{Math.Round(heat, 2)}°C";
-//                break;
+            case TemperatureUnit.Fahrenheit:
+                _heatTextLabel.text = $"{Math.Round((heat - 273.15f) * 1.8f + 32, 2)}F";
+                break;
+        }
+    }
 
-//            case TemperatureUnit.Kelvin:
-//                _heatTextLabel.text = $"{Math.Round(heat + 273.15f, 2)}K";
-//                break;
+    private void UpdateHeatTextLabelPosition()
+    {
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
 
-//            case TemperatureUnit.Fahrenheit:
-//                _heatTextLabel.text = $"{Math.Round(heat * (9 / 5) + 32, 2)}F";
-//                break;
-//        }
-//    }
+        _heatTextLabel.rectTransform.position = new Vector3(mousePosition.x + _xOffset, mousePosition.y + _yOffset, 0f);
+    }
 
-//    private void UpdateHeatTextLabelPosition()
-//    {
-//        Vector2 mousePosition = Mouse.current.position.ReadValue();
+    private void OnEnable()
+    {
+        TemperatureLabelSystem.OnUpdateTemperatureUI += UpdateHeatUI;
+        TemperatureLabelSystem.OnTemperatureRaycastExit += DisableHeatUI;
+    }
 
-//        _heatTextLabel.rectTransform.position = new Vector3(mousePosition.x + _xOffset, mousePosition.y + _yOffset, 0f);
-//    }
-
-//    private void OnEnable()
-//    {
-//        MouseRaycastSystem.OnUpdateHeatUI += UpdateHeatUI;
-
-//        MouseRaycastSystem.OnEnableHeatUI += EnableHeatUI;
-//        MouseRaycastSystem.OnDisableHeatUI += DisableHeatUI;
-//    }
-
-//    private void OnDisable()
-//    {
-//        MouseRaycastSystem.OnUpdateHeatUI -= UpdateHeatUI;
-
-//        MouseRaycastSystem.OnEnableHeatUI -= EnableHeatUI;
-//        MouseRaycastSystem.OnDisableHeatUI -= DisableHeatUI;
-//    }
-//}
+    private void OnDisable()
+    {
+        TemperatureLabelSystem.OnUpdateTemperatureUI -= UpdateHeatUI;
+        TemperatureLabelSystem.OnTemperatureRaycastExit -= DisableHeatUI;
+    }
+}

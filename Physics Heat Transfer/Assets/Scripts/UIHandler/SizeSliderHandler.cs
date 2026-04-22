@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class SizeSliderHandler : MonoBehaviour
 {
+    public static SizeSliderHandler Instance;
+
+    private LocalizationManager _localizationManager;
+
     [SerializeField]
     private Slider _widthSlider;
     [SerializeField]
@@ -20,6 +24,24 @@ public class SizeSliderHandler : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _depthSliderTextLabel;
 
+    public int width;
+    public int height;
+    public int depth;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        _localizationManager = LocalizationManager.Instance;
+    }
+
     private void Start()
     {
         _widthSlider.onValueChanged.AddListener(OnWidthSliderValueChanged);
@@ -30,26 +52,49 @@ public class SizeSliderHandler : MonoBehaviour
     private void OnWidthSliderValueChanged(float value)
     {
         int newWidth = (int)value;
+        width = newWidth;
 
-        //HeatMapGenerator.Instance.width = newWidth;
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        Entity queryEntity = entityManager.CreateEntityQuery(typeof(GridData)).GetSingletonEntity();
+
+        if (!entityManager.CreateEntityQuery(typeof(GridData)).TryGetSingletonEntity<GridData>(out Entity queryEntity))
+        {
+            Debug.LogWarning("No grid data singleton entity found!");
+        }
 
         GridData readGridData = entityManager.GetComponentData<GridData>(queryEntity);
 
         readGridData.width = (int)value;
 
         entityManager.SetComponentData(queryEntity, readGridData);
-        _widthSliderTextLabel.text = $"Breite: {newWidth}";
+
+        switch (_localizationManager.currentLanguage)
+        {
+            case Languages.English:
+                _widthSliderTextLabel.text = $"Width: {newWidth}";
+                break;
+
+            case Languages.German:
+                _widthSliderTextLabel.text = $"Breite: {newWidth}";
+                break;
+
+            case Languages.Bulgarian:
+                _widthSliderTextLabel.text = $"Ширина: {newWidth}";
+                break;
+        }
     }
 
     private void OnHeightSliderValueChanged(float value)
     {
         int newHeight = (int)value;
+        height = newHeight;
 
         //HeatMapGenerator.Instance.height = newHeight;
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        Entity queryEntity = entityManager.CreateEntityQuery(typeof(GridData)).GetSingletonEntity();
+
+        if (!entityManager.CreateEntityQuery(typeof(GridData)).TryGetSingletonEntity<GridData>(out Entity queryEntity))
+        {
+            Debug.LogWarning("No grid data singleton entity found!");
+        }
 
         GridData readGridData = entityManager.GetComponentData<GridData>(queryEntity);
 
@@ -57,16 +102,33 @@ public class SizeSliderHandler : MonoBehaviour
 
         entityManager.SetComponentData(queryEntity, readGridData);
 
-        _heightSliderTextLabel.text = $"Höhe: {newHeight}";
+        switch (_localizationManager.currentLanguage)
+        {
+            case Languages.English:
+                _heightSliderTextLabel.text = $"Height: {newHeight}";
+                break;
+
+            case Languages.German:
+                _heightSliderTextLabel.text = $"Höhe: {newHeight}";
+                break;
+
+            case Languages.Bulgarian:
+                _heightSliderTextLabel.text = $"Височина: {newHeight}";
+                break;
+        }
     }
 
     private void OnDepthSliderValueChanged(float value)
     {
         int newDepth = (int)value;
+        depth = newDepth;
 
-        //HeatMapGenerator.Instance.depth = newDepth;
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        Entity queryEntity = entityManager.CreateEntityQuery(typeof(GridData)).GetSingletonEntity();
+
+        if (!entityManager.CreateEntityQuery(typeof(GridData)).TryGetSingletonEntity<GridData>(out Entity queryEntity))
+        {
+            Debug.LogWarning("No grid data singleton entity found!");
+        }
 
         GridData readGridData = entityManager.GetComponentData<GridData>(queryEntity);
 
@@ -74,6 +136,19 @@ public class SizeSliderHandler : MonoBehaviour
 
         entityManager.SetComponentData(queryEntity, readGridData);
 
-        _depthSliderTextLabel.text = $"Tiefe: {newDepth}";
+        switch (_localizationManager.currentLanguage)
+        {
+            case Languages.English:
+                _depthSliderTextLabel.text = $"Depth: {newDepth}";
+                break;
+
+            case Languages.German:
+                _depthSliderTextLabel.text = $"Tiefe: {newDepth}";
+                break;
+
+            case Languages.Bulgarian:
+                _depthSliderTextLabel.text = $"Дълбочина: {newDepth}";
+                break;
+        }
     }
 }

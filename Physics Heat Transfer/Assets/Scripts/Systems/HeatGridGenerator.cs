@@ -72,6 +72,20 @@ public partial struct HeatGridGenerator : ISystem
 
         foreach (var (request, entity) in SystemAPI.Query<GenerateGridRequest>().WithEntityAccess())
         {
+            int gridDataHashmapSize = GridIDToGridDataHashmap.Count() + 1;
+
+            if (gridDataHashmapSize > GridIDToGridDataHashmap.Capacity)
+            {
+                GridIDToGridDataHashmap.Capacity = gridDataHashmapSize;
+            }
+
+            int heatDataHashmapSize = CoordinateIDToHeatDataHashmap.Count() + (gridData.width * gridData.height * gridData.depth) + 1;
+
+            if (heatDataHashmapSize > CoordinateIDToHeatDataHashmap.Capacity)
+            {
+                CoordinateIDToHeatDataHashmap.Capacity = heatDataHashmapSize;
+            }
+
             Entity parentEntity = SpawnGridParent(request.gridParentPosition, ecb, gridData);
             SpawnGrid(gridData, parentEntity, chemicalMaterialPrefabEntity, ecb, ref state);
 
@@ -95,17 +109,7 @@ public partial struct HeatGridGenerator : ISystem
     {
         state.Dependency.Complete();
 
-        int gridDataHashmapSize = GridIDToGridDataHashmap.Count() + 1;
-
-        if (gridDataHashmapSize > GridIDToGridDataHashmap.Capacity)
-        {
-            GridIDToGridDataHashmap.Capacity = gridDataHashmapSize;
-        }
-
-        //GridIDToGridDataHashmap.Clear();
         GridIDToGridDataHashmap.TryAdd(GridId, gridData);
-        //UpdateHashmapGridData updateHashmapGridDataJob = new UpdateHashmapGridData { parallelWriterGridHashmap = GridIDToGridDataHashmap.AsParallelWriter() };
-        //state.Dependency = updateHashmapGridDataJob.ScheduleParallel(state.Dependency);
 
         state.Dependency.Complete();
 
@@ -121,13 +125,6 @@ public partial struct HeatGridGenerator : ISystem
             }
         }
         GridId++;
-
-        int heatDataHashmapSize = CoordinateIDToHeatDataHashmap.Count() + (gridData.width * gridData.height * gridData.depth);
-
-        if (heatDataHashmapSize > CoordinateIDToHeatDataHashmap.Capacity)
-        {
-            CoordinateIDToHeatDataHashmap.Capacity = heatDataHashmapSize;
-        }
 
         state.Dependency.Complete();
         CoordinateIDToHeatDataHashmap.Clear();
@@ -171,9 +168,6 @@ public partial struct HeatGridGenerator : ISystem
 
             if (bufferData.chemicalMaterialID != gridData.chemicalMaterial.id)
                 continue;
-
-            //Entity requestEntity = ecb.CreateEntity();
-            //ecb.AddComponent(spawnedEntity, new HeatMapUpdateRequest { materialID = bufferData.visualBatchMaterialID, defaultHeatMapMaterialID = bufferData.heatMapBatchMaterialID });
         }
     }
 

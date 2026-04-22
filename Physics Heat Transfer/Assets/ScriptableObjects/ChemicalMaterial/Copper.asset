@@ -16,7 +16,9 @@ MonoBehaviour:
   chemicalID: 2
   englishMaterialName: Copper
   germanMaterialName: Kupfer
+  bulgarianMaterialName: "\u041C\u0435\u0434"
   thermalConductivity: 4.01
   densityPerCubicCm: 8.96
   specificHeat: 0.386
   visualMaterial: {fileID: 2100000, guid: 2bfa675950e97234f828829fcf6f5f36, type: 2}
+  heatMapMaterial: {fileID: -876546973899608171, guid: 6ec8f11965a32e14186b3b2168d5c8e6, type: 3}

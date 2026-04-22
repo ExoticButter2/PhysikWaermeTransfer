@@ -1,79 +1,3 @@
-//using UnityEngine;
-//using UnityEngine.InputSystem;
-
-//public class MouseClickHeater : MonoBehaviour
-//{
-//    [SerializeField]
-//    private InputActionReference _leftMouseClickAction;
-
-//    private bool _heatingEnabled = false;
-
-//    [SerializeField]
-//    private LayerMask _heatComponentLayerMask;
-
-//    [SerializeField]
-//    private float _kelvinIncreasePerSecond = 5f;
-
-//    private void Update()
-//    {
-//        if (_heatingEnabled)
-//        {
-//            HeatUpObject();
-//        }
-//    }
-
-//    private void HeatUpObject()
-//    {
-//        if (Physics.Raycast(Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue()), out RaycastHit hit, Mathf.Infinity, _heatComponentLayerMask))
-//        {
-//            Heat heatComponent = hit.collider.gameObject.GetComponent<Heat>();
-
-//            if (heatComponent == null)
-//            {
-//                Debug.LogWarning("No heat component found inside heat object!");
-//                return;
-//            }
-
-//            heatComponent.HeatP += _kelvinIncreasePerSecond * Time.deltaTime;
-//        }
-//    }
-
-//    public void OnTemperatureIncreasePerSecondChange(string newValueString)
-//    {
-//        Debug.Log($"New value string: {newValueString}");
-
-//        if (float.TryParse(newValueString, out float newValue))
-//        {
-//            _kelvinIncreasePerSecond = newValue;
-//        }
-//        else
-//        {
-//            Debug.LogWarning("Could not parse new value for temperature increase per second!");
-//        }
-//    }
-
-//    private void StartHeatingObject(InputAction.CallbackContext ctx)
-//    {
-//        _heatingEnabled = true;
-//    }
-
-//    private void StopHeatingObject(InputAction.CallbackContext ctx)
-//    {
-//        _heatingEnabled = false;
-//    }
-
-//    private void OnEnable()
-//    {
-//        _leftMouseClickAction.action.started += StartHeatingObject;
-//        _leftMouseClickAction.action.canceled += StopHeatingObject;
-//    }
-
-//    private void OnDisable()
-//    {
-//        _leftMouseClickAction.action.started -= StartHeatingObject;
-//        _leftMouseClickAction.action.canceled -= StopHeatingObject;
-//    }
-//}
 using Unity.Entities;
 using Unity.Physics;
 using UnityEngine.InputSystem;
@@ -90,6 +14,8 @@ public partial struct MouseClickHeater : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        EntityManager entityManager = state.EntityManager;
+
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
@@ -122,9 +48,18 @@ public partial struct MouseClickHeater : ISystem
 
             if (SystemAPI.HasComponent<HeatData>(hitEntity))
             {
+                float deltaTime = SystemAPI.Time.DeltaTime;
+
                 HeatData heatData = SystemAPI.GetComponent<HeatData>(hitEntity);
 
-                heatData.temperature += degreesPerSecond * SystemAPI.Time.DeltaTime;
+                if (heatData.temperature + degreesPerSecond * deltaTime <= 0f)
+                {
+                    heatData.temperature = 0f;
+                }
+                else
+                {
+                    heatData.temperature += degreesPerSecond * deltaTime;
+                }
 
                 SystemAPI.SetComponent(hitEntity, heatData);
             }

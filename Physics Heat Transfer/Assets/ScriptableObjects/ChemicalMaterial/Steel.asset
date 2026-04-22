@@ -16,7 +16,9 @@ MonoBehaviour:
   chemicalID: 3
   englishMaterialName: Steel
   germanMaterialName: Stahl
+  bulgarianMaterialName: "\u0421\u0442\u043E\u043C\u0430\u043D\u0430"
   thermalConductivity: 0.25
   densityPerCubicCm: 7.85
   specificHeat: 0.47
   visualMaterial: {fileID: 2100000, guid: 846cb2093aa50dd4db9715e7d6a7b7a3, type: 2}
+  heatMapMaterial: {fileID: -876546973899608171, guid: 6ec8f11965a32e14186b3b2168d5c8e6, type: 3}

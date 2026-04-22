@@ -16,7 +16,9 @@ MonoBehaviour:
   chemicalID: 0
   englishMaterialName: Iron
   germanMaterialName: Eisen
+  bulgarianMaterialName: "\u0416\u0435\u043B\u044F\u0437\u043E"
   thermalConductivity: 0.804
   densityPerCubicCm: 7.87
   specificHeat: 0.45
   visualMaterial: {fileID: 2100000, guid: 9b7d414a411ea8c4f9f45811291b363e, type: 2}
+  heatMapMaterial: {fileID: -876546973899608171, guid: 6ec8f11965a32e14186b3b2168d5c8e6, type: 3}

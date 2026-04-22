@@ -36,6 +36,7 @@ public class ChemicalMaterialLibraryBaker : Baker<ChemicalMaterialLibraryAuthori
                 id = i,
                 englishMaterialName = authoring.chemicalMaterials[i].englishMaterialName,
                 germanMaterialName = authoring.chemicalMaterials[i].germanMaterialName,
+                bulgarianMaterialName = authoring.chemicalMaterials[i].bulgarianMaterialName,
                 thermalConductivity = authoring.chemicalMaterials[i].thermalConductivity,
                 densityPerCubicCm = authoring.chemicalMaterials[i].densityPerCubicCm,
                 specificHeat = authoring.chemicalMaterials[i].specificHeat,

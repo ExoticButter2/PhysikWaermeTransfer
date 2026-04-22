@@ -16,7 +16,9 @@ MonoBehaviour:
   chemicalID: 1
   englishMaterialName: Brass
   germanMaterialName: Messing
+  bulgarianMaterialName: "\u041C\u0435\u0441\u0438\u043D\u0433"
   thermalConductivity: 1.4687
   densityPerCubicCm: 8.4
   specificHeat: 0.38
   visualMaterial: {fileID: 2100000, guid: 75a97849b65f4da46a983f61a1af6bfb, type: 2}
+  heatMapMaterial: {fileID: -876546973899608171, guid: 6ec8f11965a32e14186b3b2168d5c8e6, type: 3}
