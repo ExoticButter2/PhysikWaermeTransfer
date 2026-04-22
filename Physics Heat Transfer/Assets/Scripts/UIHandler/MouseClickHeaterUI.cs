@@ -10,7 +10,8 @@ public class MouseClickHeaterUI : MonoBehaviour
 {
     public void OnValueEnter(string stringValue)
     {
-        float value = float.Parse(stringValue);
+        if (!float.TryParse(stringValue, out float value))
+            return;
 
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         Entity requestEntity = entityManager.CreateEntity();

@@ -11,12 +11,13 @@ public enum Languages
     Bulgarian
 }
 
+[DefaultExecutionOrder(-50)]
 public class LocalizationManager : MonoBehaviour
 {
     public static LocalizationManager Instance;
 
     [HideInInspector]
-    public Languages currentLanguage;
+    public Languages currentLanguage = Languages.English;
 
     public static Action<Languages> OnLanguageChange;
 

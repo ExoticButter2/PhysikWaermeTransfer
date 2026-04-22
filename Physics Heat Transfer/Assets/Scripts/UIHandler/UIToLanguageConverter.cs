@@ -167,16 +167,13 @@ public class UIToLanguageConverter : MonoBehaviour
         }
     }
 
-    private void Awake()
+    private void Start()
     {
         _localizationManager = LocalizationManager.Instance;
         _materialPresetSelector = MaterialPresetSelector.Instance;
         _sizeSliderHandler = SizeSliderHandler.Instance;
         _temperatureUnitSelector = TemperatureUnitSelector.Instance;
-    }
 
-    private void Start()
-    {
         UpdateUIToLanguage(_localizationManager.currentLanguage);
     }
 

@@ -38,12 +38,12 @@ public class SizeSliderHandler : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        _localizationManager = LocalizationManager.Instance;
     }
 
     private void Start()
     {
+        _localizationManager = LocalizationManager.Instance;
+
         _widthSlider.onValueChanged.AddListener(OnWidthSliderValueChanged);
         _heightSlider.onValueChanged.AddListener(OnHeightSliderValueChanged);
         _depthSlider.onValueChanged.AddListener(OnDepthSliderValueChanged);

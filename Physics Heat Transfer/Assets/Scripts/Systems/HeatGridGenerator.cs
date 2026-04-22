@@ -117,7 +117,7 @@ public partial struct HeatGridGenerator : ISystem
         {
             for (int y = 0; y < gridData.height; y++)
             {
-                for (int z = 0; z < gridData.width; z++)
+                for (int z = 0; z < gridData.depth; z++)
                 {
                     SpawnHeatVoxel(new float3(x, y, z), heatVoxelPrefabEntity, parentEntity, gridData, ecb, ref state);
                     Id++;
