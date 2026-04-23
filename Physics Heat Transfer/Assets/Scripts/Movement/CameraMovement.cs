@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,16 +22,19 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]
     private float _mouseLookSensitivity = 1.0f;
 
-    [SerializeField]
-    private float _minX;
-    [SerializeField]
-    private float _maxX;
-
     private float _xRotation = 0f;
     private float _yRotation = 0f;
 
     private Vector2 _lockedMousePosition = Vector2.zero;
     private bool _mouseLocked = false;
+
+    [SerializeField]
+    private float _rotationSmoothing = 2f;
+    [SerializeField]
+    private float _positionSmoothing = 2f;
+
+    private Quaternion _targetRotation = Quaternion.identity;
+    private Vector3 _targetPosition = Vector3.zero;
 
     private void Start()
     {
@@ -43,6 +47,19 @@ public class CameraMovement : MonoBehaviour
         {
             MoveCamera();
         }
+
+        ApplySmoothPosition();
+        ApplySmoothRotation();
+    }
+
+    private void ApplySmoothPosition()
+    {
+        _cameraTransform.position = Vector3.Lerp(_cameraTransform.position, _targetPosition, _positionSmoothing * Time.deltaTime);
+    }
+
+    private void ApplySmoothRotation()
+    {
+        _cameraTransform.rotation = Quaternion.Lerp(_cameraTransform.rotation, _targetRotation, _rotationSmoothing * Time.deltaTime);
     }
 
     private void MoveMouseToLockPosition()
@@ -79,13 +96,13 @@ public class CameraMovement : MonoBehaviour
         Vector2 lookInput = ctx.ReadValue<Vector2>() * _mouseLookSensitivity;
 
         _yRotation += lookInput.x;
-        _xRotation = Mathf.Clamp(_xRotation - lookInput.y, _minX, _maxX);
+        _xRotation -= lookInput.y;
 
         Vector3 camAngles = _cameraTransform.eulerAngles;
 
-        float clampXRotation = Mathf.Clamp(_xRotation, _minX, _maxX);
+        Quaternion rotation = Quaternion.Euler(_xRotation, _yRotation, 0f);
 
-        _cameraTransform.rotation = Quaternion.Euler(clampXRotation, _yRotation, 0f);
+        _targetRotation = rotation;
     }
 
     private void StartMove(InputAction.CallbackContext ctx)
@@ -111,7 +128,7 @@ public class CameraMovement : MonoBehaviour
     private void MoveCamera()
     {
         Vector3 positionAddVector = (_cameraTransform.forward * _moveHorizontalVector.y) + (_cameraTransform.right * _moveHorizontalVector.x) + (_cameraTransform.up * _moveVerticalValue);
-        _cameraTransform.position += positionAddVector * Time.deltaTime;
+        _targetPosition = positionAddVector + _cameraTransform.position;
     }
 
     private void OnEnable()

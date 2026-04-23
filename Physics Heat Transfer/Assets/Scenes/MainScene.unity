@@ -1519,10 +1519,10 @@ MonoBehaviour:
   verticalMovementInput: {fileID: 7727345470178085084, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   lookInput: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   startLookKey: {fileID: 8819199448949716913, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _moveSensitivity: 3
+  _moveSensitivity: 1
   _mouseLookSensitivity: 0.4
-  _minX: -90
-  _maxX: 90
+  _rotationSmoothing: 40
+  _positionSmoothing: 30
 --- !u!1 &336691849
 GameObject:
   m_ObjectHideFlags: 0
@@ -2854,8 +2854,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 997088984}
   m_HandleRect: {fileID: 997088983}
   m_Direction: 2
-  m_Value: -0.000022124215
-  m_Size: 0.86680424
+  m_Value: -0.00044110214
+  m_Size: 0.86674535
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4456,7 +4456,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 44.14104}
+  m_AnchoredPosition: {x: 0, y: 44.15947}
   m_SizeDelta: {x: 0, y: 331.4}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &986352251
@@ -7646,8 +7646,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1752370793}
   m_HandleRect: {fileID: 1752370792}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.6313355
+  m_Value: -0.00011589189
+  m_Size: 0.6312955
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7727,7 +7727,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 167.74004}
+  m_AnchoredPosition: {x: 0, y: 167.75945}
   m_SizeDelta: {x: 0, y: 455}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1706719579
