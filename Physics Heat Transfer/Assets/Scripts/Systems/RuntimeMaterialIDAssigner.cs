@@ -1,6 +1,5 @@
 using Unity.Entities;
 using Unity.Rendering;
-using UnityEngine;
 
 public partial struct RuntimeMaterialIDAssigner : ISystem
 {

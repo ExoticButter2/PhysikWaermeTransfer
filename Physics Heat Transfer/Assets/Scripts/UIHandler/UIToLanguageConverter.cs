@@ -160,7 +160,19 @@ public class UIToLanguageConverter : MonoBehaviour
                     _materialSelectorLabel.text = $"Материал: {_materialPresetSelector.DefaultMaterial.bulgarianMaterialName}";
                 }
 
-                _unitSelectorLabel.text = $"Мерна единица: {_temperatureUnitSelector.selectedTemperatureUnit}";
+                switch (_temperatureUnitSelector.selectedTemperatureUnit)
+                {
+                    case TemperatureUnit.Kelvin:
+                        _unitSelectorLabel.text = $"Мерна единица: Келвин";
+                        break;
+                    case TemperatureUnit.Celsius:
+                        _unitSelectorLabel.text = $"Мерна единица: Целзий";
+                        break;
+                    case TemperatureUnit.Fahrenheit:
+                        _unitSelectorLabel.text = $"Мерна единица: Фаренхайт";
+                        break;
+                }
+
                 _mouseClickHeaterLabel.text = "K/s с LMB";
                 _languageToggleButtonLabel.text = "Езици";
                 break;
